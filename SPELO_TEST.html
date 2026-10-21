@@ -1,0 +1,2589 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>С.П.Е.Л.О. — Спасаем Полезную Еду Локальных Огородов | Платформа и Подписка</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Unbounded:wght@500;700;800;900&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'Georgia', 'serif'],
+                        display: ['Unbounded', 'sans-serif'],
+                    },
+                    colors: {
+                        sun: {
+                            cream: '#FFF9EC',
+                            soft: '#FFEAB6',
+                            gold: '#FFD166',
+                            main: '#FFA500',
+                            deep: '#E68A00'
+                        },
+                        grass: {
+                            lime: '#85B81A',
+                            main: '#409300',
+                            deep: '#2E6B00',
+                            moss: '#485E2B',
+                            sage: '#8F9B79'
+                        },
+                        soil: {
+                            field: '#6D5839',
+                            clay: '#4E342E',
+                            loam: '#3E2723',
+                            humus: '#241511',
+                            bedrock: '#160C09'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --texture-opacity: 0.42;
+        }
+
+        body {
+            overflow-x: hidden;
+            background-color: #FFF9EC;
+            color: #241511;
+        }
+
+        /* VERTICAL ECOSYSTEM GRADIENT: Sun (#FFA500) -> Grass (#409300) -> Soil (#3E2723 -> #160C09) */
+        .ecosystem-scroll-bg {
+            background: linear-gradient(
+                180deg,
+                #FFA500 0%,
+                #FF9800 7%,
+                #FFF3D6 11%,
+                #FFF8EA 28%,
+                #E3EEB2 35%,
+                #85B81A 40%,
+                #409300 46%,
+                #2E6B00 62%,
+                #3B5220 68%,
+                #4E342E 74%,
+                #3E2723 82%,
+                #241511 92%,
+                #160C09 100%
+            );
+            position: relative;
+        }
+
+        /* Dynamic Texture Layers */
+        .texture-overlay {
+            opacity: var(--texture-opacity);
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .texture-sun {
+            background-image:
+                radial-gradient(circle at 85% 15%, rgba(255, 255, 255, 0.45) 0%, transparent 55%),
+                radial-gradient(rgba(255, 165, 0, 0.18) 1.5px, transparent 1.5px);
+            background-size: 100% 100%, 36px 36px;
+        }
+
+        .texture-foliage {
+            background-image:
+                radial-gradient(rgba(255, 255, 255, 0.16) 1px, transparent 1px),
+                repeating-linear-gradient(45deg, rgba(255,255,255,0.035) 0px, rgba(255,255,255,0.035) 2px, transparent 2px, transparent 16px);
+            background-size: 24px 24px, 100% 100%;
+        }
+
+        .texture-plowed-field {
+            background-color: #6B5737;
+            background-image:
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(36, 21, 17, 0.35) 0px,
+                    rgba(36, 21, 17, 0.35) 3px,
+                    rgba(255, 209, 102, 0.08) 3px,
+                    rgba(255, 209, 102, 0.08) 9px
+                ),
+                radial-gradient(rgba(255, 165, 0, 0.18) 1px, transparent 1.5px);
+            background-size: 100% 12px, 24px 24px;
+        }
+
+        .texture-soil-deep {
+            background-image:
+                radial-gradient(rgba(255, 165, 0, 0.2) 1.2px, transparent 1.2px),
+                radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+                radial-gradient(rgba(0, 0, 0, 0.45) 2px, transparent 2.5px);
+            background-size: 32px 32px, 18px 18px, 22px 22px;
+            background-position: 0 0, 9px 9px, 14px 6px;
+        }
+
+        /* Marquee Ticker Animation */
+        @keyframes marqueeScroll {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-50%); }
+        }
+        .animate-marquee {
+            display: flex;
+            width: max-content;
+            animation: marqueeScroll 32s linear infinite;
+        }
+        .animate-marquee:hover {
+            animation-play-state: paused;
+        }
+
+        /* Range Slider Custom Styling */
+        input[type=range] {
+            -webkit-appearance: none;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            height: 10px;
+            border-radius: 999px;
+            background: rgba(64, 147, 0, 0.25);
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 26px;
+            width: 26px;
+            border-radius: 50%;
+            background: #FFA500;
+            border: 3px solid #FFF9EC;
+            cursor: pointer;
+            margin-top: -8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-sun-main selection:text-soil-humus">
+
+    <!-- REUSABLE EXACT BRAND LOGO SVG DEFINITIONS -->
+    <svg class="hidden" aria-hidden="true">
+        <defs>
+            <!-- Exact Recreation of Attached СПЕЛО Logo in Rectangular Frame -->
+            <symbol id="spelo-official-logo" viewBox="0 0 540 165">
+                <!-- White inner fill + #FFA500 outer rectangular border -->
+                <rect x="6" y="6" width="528" height="153" fill="#FFFFFF" stroke="#FFA500" stroke-width="12"/>
+                <!-- Letter С connected via lower bridge to П -->
+                <path d="M 122 66 A 42 42 0 1 0 122 104 L 138 92" fill="none" stroke="#FFA500" stroke-width="19" stroke-linecap="butt" stroke-linejoin="round"/>
+                <!-- Letter П -->
+                <path d="M 142 132 L 142 42 L 222 42 L 222 132" fill="none" stroke="#FFA500" stroke-width="19" stroke-linecap="butt" stroke-linejoin="miter"/>
+                <!-- Letter Е with signature flared top-right serif & rounded middle bar -->
+                <path d="M 254 33 L 254 132" fill="none" stroke="#FFA500" stroke-width="19" stroke-linecap="butt"/>
+                <path d="M 245 42 L 322 42 Q 336 42 343 32" fill="none" stroke="#FFA500" stroke-width="18" stroke-linecap="round"/>
+                <path d="M 254 83 L 315 83" fill="none" stroke="#FFA500" stroke-width="18" stroke-linecap="round"/>
+                <path d="M 245 123 L 326 123 Q 336 123 340 132" fill="none" stroke="#FFA500" stroke-width="18" stroke-linecap="butt"/>
+                <!-- Letter Л with rounded arch apex -->
+                <path d="M 354 132 L 382 54 Q 391 32 400 54 L 428 132" fill="none" stroke="#FFA500" stroke-width="19" stroke-linecap="butt" stroke-linejoin="round"/>
+                <!-- Letter О geometric circle -->
+                <circle cx="476" cy="83" r="41" fill="none" stroke="#FFA500" stroke-width="19"/>
+            </symbol>
+
+            <!-- Kraft Box Logo Stamp Version -->
+            <symbol id="spelo-box-stamp" viewBox="0 0 540 165">
+                <rect x="6" y="6" width="528" height="153" fill="#FFF9EC" fill-opacity="0.92" stroke="#FFA500" stroke-width="14"/>
+                <path d="M 122 66 A 42 42 0 1 0 122 104 L 138 92" fill="none" stroke="#FFA500" stroke-width="20" stroke-linejoin="round"/>
+                <path d="M 142 132 L 142 42 L 222 42 L 222 132" fill="none" stroke="#FFA500" stroke-width="20"/>
+                <path d="M 254 33 L 254 132" fill="none" stroke="#FFA500" stroke-width="20"/>
+                <path d="M 245 42 L 322 42 Q 336 42 343 32" fill="none" stroke="#FFA500" stroke-width="19" stroke-linecap="round"/>
+                <path d="M 254 83 L 315 83" fill="none" stroke="#FFA500" stroke-width="19" stroke-linecap="round"/>
+                <path d="M 245 123 L 326 123 Q 336 123 340 132" fill="none" stroke="#FFA500" stroke-width="19"/>
+                <path d="M 354 132 L 382 54 Q 391 32 400 54 L 428 132" fill="none" stroke="#FFA500" stroke-width="20" stroke-linejoin="round"/>
+                <circle cx="476" cy="83" r="41" fill="none" stroke="#FFA500" stroke-width="20"/>
+            </symbol>
+        </defs>
+    </svg>
+
+    <!-- PRESENTATION MODE SWITCHER BAR (Allows switching between all 5 required parts from the doc) -->
+    <div class="bg-soil-humus text-sun-cream text-xs py-2 px-3 sm:px-6 sticky top-0 z-50 border-b border-white/15 shadow-md">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded bg-sun-main text-soil-humus font-display font-bold text-[10px] uppercase">Режим презентации MVP</span>
+                <span class="hidden md:inline text-amber-200/80 text-[11px]">Все экраны платформы из ТЗ в одном файле:</span>
+            </div>
+
+            <!-- 4 Presentation Views Switcher -->
+            <div class="flex flex-wrap items-center gap-1.5">
+                <button onclick="switchAppView('landing')" id="view-tab-landing" class="px-3 py-1 rounded-lg font-bold text-[11px] bg-sun-main text-soil-humus transition">
+                    1. Продающий Лендинг
+                </button>
+                <button onclick="switchAppView('checkout')" id="view-tab-checkout" class="px-3 py-1 rounded-lg font-semibold text-[11px] bg-white/10 text-white hover:bg-white/20 transition">
+                    2. Воронка заказа (5 шагов)
+                </button>
+                <button onclick="switchAppView('cabinet')" id="view-tab-cabinet" class="px-3 py-1 rounded-lg font-semibold text-[11px] bg-white/10 text-white hover:bg-white/20 transition">
+                    3. Личный кабинет (ЛК)
+                </button>
+                <button onclick="switchAppView('orders')" id="view-tab-orders" class="px-3 py-1 rounded-lg font-semibold text-[11px] bg-white/10 text-white hover:bg-white/20 transition flex items-center gap-1.5">
+                    <span>4. Страница заказов и Ядро</span>
+                    <span id="orders-badge-count" class="px-1.5 py-0.2 rounded-full bg-grass-main text-white text-[10px] font-extrabold">4</span>
+                </button>
+                <button onclick="downloadThisHtmlFile()" class="ml-1 px-2.5 py-1 rounded-lg font-bold text-[11px] bg-grass-main hover:bg-grass-deep text-white transition flex items-center gap-1" title="Скачать этот HTML-файл себе на компьютер">
+                    <span>⬇ Скачать .html</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN STICKY NAVIGATION HEADER (Exact Oddbox Structure + Attached SPELO Logo) -->
+    <header class="sticky top-[40px] z-40 bg-white/95 backdrop-blur-md border-b border-stone-200/80 px-4 sm:px-8 py-3 shadow-sm">
+        <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+            <!-- Left: Attached SPELO Logo + Slogan -->
+            <div class="flex items-center gap-3 cursor-pointer" onclick="switchAppView('landing'); window.scrollTo({top:0, behavior:'smooth'})">
+                <svg class="h-10 sm:h-11 w-auto shadow-sm rounded-sm" viewBox="0 0 540 165" aria-label="СПЕЛО Логотип">
+                    <use href="#spelo-official-logo"></use>
+                </svg>
+                <div class="hidden xl:block border-l border-stone-300 pl-3">
+                    <span class="block text-[11px] font-bold text-soil-humus leading-tight">
+                        <span class="text-sun-deep">С</span>пасаем <span class="text-sun-deep">П</span>олезную <span class="text-sun-deep">Е</span>ду
+                    </span>
+                    <span class="block text-[11px] font-bold text-grass-deep leading-tight">
+                        <span class="text-grass-main">Л</span>окальных <span class="text-grass-main">О</span>городов
+                    </span>
+                </div>
+            </div>
+
+            <!-- Center: Oddbox Navigation Links -->
+            <nav class="hidden lg:flex items-center gap-6 text-xs font-semibold text-soil-humus">
+                <a href="#sec-rescued-weekly" onclick="switchAppView('landing')" class="hover:text-sun-deep transition">Фрукты и овощи</a>
+                <a href="#sec-boxes-types" onclick="switchAppView('landing')" class="hover:text-sun-deep transition">Рынок</a>
+                <a href="#sec-how-it-works" onclick="switchAppView('landing')" class="hover:text-sun-deep transition">Как это работает</a>
+                <a href="#sec-our-mission" onclick="switchAppView('landing')" class="hover:text-grass-main transition">Наша миссия</a>
+                <a href="#sec-producers-b2b" onclick="switchAppView('landing')" class="hover:text-grass-main transition">Наши производители</a>
+                <a href="#sec-recipes" onclick="switchAppView('landing')" class="hover:text-soil-clay transition">Рецепты</a>
+            </nav>
+
+            <!-- Right: Authorize (Cabinet) & Subscribe (5-Step Checkout) -->
+            <div class="flex items-center gap-2.5">
+                <button onclick="switchAppView('cabinet')" class="px-3.5 py-2 rounded-lg border border-stone-300 hover:border-soil-humus text-xs font-semibold text-soil-humus flex items-center gap-1.5 transition">
+                    <span>↪</span>
+                    <span>Личный кабинет</span>
+                </button>
+                <button onclick="startSubscriptionFlow()" class="px-4 sm:px-5 py-2.5 rounded-lg bg-[#FFA500] hover:bg-[#E68A00] text-soil-humus font-display font-bold text-xs shadow-md transition">
+                    Подписаться
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- =========================================================================
+         VIEW 1: MAIN SELLING LANDING PAGE (WITH SUN -> GRASS -> SOIL ECOSYSTEM)
+         ========================================================================= -->
+    <div id="app-view-landing" class="ecosystem-scroll-bg">
+
+        <!-- 1. HERO SECTION (Oddbox Layout + Postcode/Address Check + Kraft Box Visual) -->
+        <section id="sec-hero" class="relative pt-10 pb-14 sm:pt-16 sm:pb-20 px-4 sm:px-8 overflow-hidden">
+            <div class="texture-overlay texture-sun absolute inset-0"></div>
+
+            <div class="max-w-7xl mx-auto relative z-10 grid lg:grid-cols-12 gap-10 items-center">
+                <!-- Left Column: Offer & Postcode Checker -->
+                <div class="lg:col-span-6 space-y-5">
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 border border-soil-humus/10 shadow-sm">
+                        <span class="w-2.5 h-2.5 rounded-full bg-grass-main"></span>
+                        <span class="text-xs font-extrabold tracking-wide text-soil-humus">С.П.Е.Л.О. — Спасаем Полезную Еду Локальных Огородов</span>
+                    </div>
+
+                    <h1 class="font-serif font-bold text-4xl sm:text-6xl text-soil-humus leading-[1.06]">
+                        Хорошая еда приносит пользу.
+                    </h1>
+
+                    <p class="text-base sm:text-lg text-soil-humus/90 font-medium leading-relaxed max-w-xl">
+                        Боритесь с расточительством, заказывая доставку необычных, крупных или изогнутых, но восхитительно свежих фермерских фруктов, овощей и продуктов с локальных огородов Дона — до 35% выгоднее супермаркетов.
+                    </p>
+
+                    <!-- Postcode / Address Bar (Redirects to 5-Step Funnel) -->
+                    <div class="pt-2 max-w-lg">
+                        <div class="flex flex-col sm:flex-row gap-2.5">
+                            <input id="hero-address-input" type="text" placeholder="Проверьте свой индекс или адрес (напр. Ростов, Садовая 45)" class="flex-1 px-4 py-3.5 rounded-xl bg-white border-2 border-white shadow-lg text-sm font-medium text-soil-humus focus:outline-none focus:border-soil-humus">
+                            <button onclick="startSubscriptionFlowFromHero()" class="px-7 py-3.5 rounded-xl bg-soil-humus hover:bg-soil-loam text-white font-display font-bold text-xs sm:text-sm shadow-lg transition whitespace-nowrap">
+                                Проверять
+                            </button>
+                        </div>
+                        <div class="flex flex-wrap gap-2 mt-2 text-[11px] text-soil-humus/80 font-semibold">
+                            <span>Быстрый тест:</span>
+                            <button onclick="fillHeroAddress('344002, Ростов-на-Дону, ул. Большая Садовая, 58')" class="underline hover:text-black">Центр (344002)</button>
+                            <button onclick="fillHeroAddress('344092, Ростов-на-Дону, пр. Космонавтов, 19')" class="underline hover:text-black">Северный (344092)</button>
+                            <button onclick="fillHeroAddress('344090, Ростов-на-Дону, пр. Стачки, 188')" class="underline hover:text-black">Западный (344090)</button>
+                        </div>
+                    </div>
+
+                    <!-- Trustpilot-style Rating Bar -->
+                    <div class="pt-3 flex flex-wrap items-center gap-3">
+                        <span class="font-bold text-sm text-soil-humus">Отлично</span>
+                        <div class="flex items-center gap-1">
+                            <span class="w-6 h-6 bg-[#00B67A] text-white flex items-center justify-center text-xs font-bold rounded-sm">★</span>
+                            <span class="w-6 h-6 bg-[#00B67A] text-white flex items-center justify-center text-xs font-bold rounded-sm">★</span>
+                            <span class="w-6 h-6 bg-[#00B67A] text-white flex items-center justify-center text-xs font-bold rounded-sm">★</span>
+                            <span class="w-6 h-6 bg-[#00B67A] text-white flex items-center justify-center text-xs font-bold rounded-sm">★</span>
+                            <span class="w-6 h-6 bg-[#00B67A] text-white flex items-center justify-center text-xs font-bold rounded-sm">★</span>
+                        </div>
+                        <span class="text-xs font-semibold text-soil-humus">4.9 из 5 на основе <u class="cursor-pointer" onclick="switchAppView('checkout')">2 140 отзывов</u> • Эко-платформа Дона</span>
+                    </div>
+                </div>
+
+                <!-- Right Column: Hero Box Composition with Official SPELO Stamp -->
+                <div class="lg:col-span-6">
+                    <div class="relative mx-auto max-w-xl bg-white/35 backdrop-blur-sm rounded-[36px] p-6 sm:p-8 border-2 border-white/70 shadow-2xl">
+                        <!-- Custom High-Detail SVG Illustration of Overflowing SPELO Kraft Box & Jars -->
+                        <svg class="w-full h-auto drop-shadow-xl" viewBox="0 0 600 390" fill="none">
+                            <!-- Shadow -->
+                            <ellipse cx="310" cy="355" rx="250" ry="22" fill="#241511" fill-opacity="0.28"/>
+                            <!-- Open Kraft Box Flaps -->
+                            <polygon points="105,155 155,105 260,155" fill="#BA8E58"/>
+                            <polygon points="485,155 435,105 330,155" fill="#B0844E"/>
+                            <!-- Overflowing Produce Inside Box -->
+                            <!-- Broccoli & Greens -->
+                            <circle cx="215" cy="135" r="34" fill="#2E6B00"/>
+                            <circle cx="240" cy="125" r="28" fill="#409300"/>
+                            <!-- Carrots & Parsnips -->
+                            <path d="M160,165 C155,95 190,95 195,165" fill="#FF7043"/>
+                            <path d="M174,100 L165,78 M177,100 L178,74 M181,102 L192,82" stroke="#2E6B00" stroke-width="4" stroke-linecap="round"/>
+                            <!-- Eggplant & Bell Peppers -->
+                            <ellipse cx="305" cy="138" rx="30" ry="42" fill="#4A148C"/>
+                            <circle cx="365" cy="135" r="32" fill="#FF8F00"/>
+                            <circle cx="415" cy="142" r="28" fill="#E53935"/>
+                            <!-- Mushrooms Basket on Top Right -->
+                            <rect x="370" y="75" width="95" height="55" rx="6" fill="#A97D4B" stroke="#795548" stroke-width="2"/>
+                            <circle cx="392" cy="75" r="14" fill="#D7CCC8"/>
+                            <circle cx="418" cy="72" r="15" fill="#BCAAA4"/>
+                            <circle cx="444" cy="76" r="13" fill="#D7CCC8"/>
+                            <!-- Main Kraft Box Front Body -->
+                            <rect x="130" y="155" width="330" height="190" rx="8" fill="#D7B384" stroke="#B68E5C" stroke-width="3"/>
+                            <!-- Side Shadow of Box -->
+                            <polygon points="460,155 495,140 495,325 460,345" fill="#B89262"/>
+                            <!-- OFFICIAL SPELO LOGO STAMP ON THE BOX -->
+                            <use href="#spelo-box-stamp" x="175" y="195" width="240" height="75"/>
+                            <!-- Market Jars & Fresh Produce Around the Box (As in Oddbox Hero) -->
+                            <!-- Left Jar (Pickles/Jam) -->
+                            <rect x="68" y="225" width="66" height="120" rx="12" fill="#8D230F" stroke="#FFF9EC" stroke-width="3"/>
+                            <rect x="76" y="213" width="50" height="14" rx="4" fill="#241511"/>
+                            <!-- Grapes &Chili in Front Left -->
+                            <circle cx="145" cy="338" r="10" fill="#9CCC65"/>
+                            <circle cx="160" cy="342" r="10" fill="#8BC34A"/>
+                            <circle cx="152" cy="326" r="10" fill="#AED581"/>
+                            <circle cx="174" cy="336" r="10" fill="#9CCC65"/>
+                            <!-- Right Paper Bag with Cherry Tomatoes -->
+                            <rect x="440" y="175" width="68" height="90" rx="8" fill="#C59B68" stroke="#8D6E63" stroke-width="2"/>
+                            <circle cx="460" cy="175" r="11" fill="#D32F2F"/>
+                            <circle cx="478" cy="172" r="11" fill="#E53935"/>
+                            <circle cx="492" cy="178" r="10" fill="#C62828"/>
+                            <!-- Right Glass Jar (Artisanal Pasta / Grains) -->
+                            <rect x="452" y="242" width="66" height="105" rx="10" fill="#F5DEB3" stroke="#FFF9EC" stroke-width="3"/>
+                            <rect x="460" y="230" width="50" height="12" rx="3" fill="#B0BEC5"/>
+                            <!-- Right Bottle (Don Tomato Sauce) -->
+                            <rect x="528" y="200" width="42" height="145" rx="14" fill="#B71C1C" stroke="#FFF9EC" stroke-width="2"/>
+                            <rect x="539" y="165" width="20" height="38" rx="4" fill="#B71C1C"/>
+                            <rect x="537" y="157" width="24" height="10" rx="3" fill="#241511"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DARK MARQUEE TICKER (From Screenshot 1) -->
+        <div class="bg-soil-humus text-sun-cream py-3.5 border-y border-white/10 overflow-hidden select-none relative z-20">
+            <div class="animate-marquee flex items-center gap-10 text-xs font-display font-bold uppercase tracking-wider">
+                <span>• ПРИСОЕДИНЯЙТЕСЬ К ДВИЖЕНИЮ ВОСХИТИТЕЛЬНО НЕОБЫЧНЫХ</span>
+                <span>• НА ДАННЫЙ МОМЕНТ СПАСЕНО БОЛЕЕ <strong>68 000 КГ</strong> ДОНСКОГО УРОЖАЯ</span>
+                <span>• ПОДДЕРЖИТЕ ЛОКАЛЬНЫХ ПРОИЗВОДИТЕЛЕЙ И ФЕРМЕРОВ</span>
+                <span>• СОКРАЩАЕМ ПЛАСТИК И ПИЩЕВЫЕ ОТХОДЫ КАЖДУЮ НЕДЕЛЮ</span>
+                <span>• ПРИСОЕДИНЯЙТЕСЬ К ДВИЖЕНИЮ ВОСХИТИТЕЛЬНО НЕОБЫЧНЫХ</span>
+                <span>• НА ДАННЫЙ МОМЕНТ СПАСЕНО БОЛЕЕ <strong>68 000 КГ</strong> ДОНСКОГО УРОЖАЯ</span>
+                <span>• ПОДДЕРЖИТЕ ЛОКАЛЬНЫХ ПРОИЗВОДИТЕЛЕЙ И ФЕРМЕРОВ</span>
+            </div>
+        </div>
+
+        <!-- 2. "КОРОБКИ ВСЕХ ФОРМ И РАЗМЕРОВ" (From Screenshot 2: 3 Box Categories) -->
+        <section id="sec-boxes-types" class="py-16 sm:py-24 px-4 sm:px-8 relative z-10">
+            <div class="max-w-7xl mx-auto">
+                <h2 class="font-serif font-bold text-3xl sm:text-5xl text-center text-soil-humus mb-14">
+                    Коробки всех форм и размеров
+                </h2>
+
+                <div class="grid md:grid-cols-3 gap-8">
+                    <!-- Card 1: Fruit & Veg Box -->
+                    <div class="bg-white/85 backdrop-blur rounded-3xl p-7 text-center shadow-xl border border-amber-200/70 flex flex-col justify-between hover:-translate-y-1 transition">
+                        <div>
+                            <svg class="w-full h-44 mx-auto mb-4" viewBox="0 0 320 190" fill="none">
+                                <ellipse cx="160" cy="172" rx="115" ry="12" fill="#241511" fill-opacity="0.18"/>
+                                <!-- Open Flaps -->
+                                <polygon points="45,75 80,45 140,75" fill="#B88E5A"/>
+                                <polygon points="275,75 240,45 180,75" fill="#B88E5A"/>
+                                <!-- Produce -->
+                                <circle cx="115" cy="62" r="24" fill="#FFF9C4"/>
+                                <circle cx="160" cy="55" r="26" fill="#2E6B00"/>
+                                <circle cx="205" cy="64" r="22" fill="#FF7043"/>
+                                <circle cx="135" cy="70" r="16" fill="#E53935"/>
+                                <!-- Kraft Box -->
+                                <rect x="70" y="75" width="180" height="95" rx="6" fill="#D7B384" stroke="#A67C46" stroke-width="2.5"/>
+                                <use href="#spelo-box-stamp" x="98" y="96" width="124" height="42"/>
+                                <!-- Grapefruit & Lemon outside -->
+                                <circle cx="235" cy="162" r="16" fill="#FF7043" stroke="#FFF9EC" stroke-width="3"/>
+                                <circle cx="262" cy="164" r="14" fill="#FDD835"/>
+                            </svg>
+                            <h3 class="font-serif font-bold text-2xl text-soil-humus">Коробки с фруктами и овощами</h3>
+                            <p class="text-xs sm:text-sm text-stone-700 mt-2">До <strong>9 видов овощей</strong> и <strong>4 видов фруктов</strong></p>
+                            <p class="text-sm font-bold text-sun-deep mt-2">От 890 ₽ за коробку</p>
+                        </div>
+                        <div class="mt-6">
+                            <button onclick="startSubscriptionFlow('mix', 'M')" class="px-7 py-3 rounded-xl bg-[#FFA500] hover:bg-[#E68A00] text-soil-humus font-display font-bold text-xs shadow-md transition">
+                                Выбери меня
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Veg Only Box -->
+                    <div class="bg-white/85 backdrop-blur rounded-3xl p-7 text-center shadow-xl border border-amber-200/70 flex flex-col justify-between hover:-translate-y-1 transition">
+                        <div>
+                            <svg class="w-full h-44 mx-auto mb-4" viewBox="0 0 320 190" fill="none">
+                                <ellipse cx="160" cy="172" rx="115" ry="12" fill="#241511" fill-opacity="0.18"/>
+                                <polygon points="45,75 80,45 140,75" fill="#B88E5A"/>
+                                <polygon points="275,75 240,45 180,75" fill="#B88E5A"/>
+                                <!-- Veg Produce -->
+                                <circle cx="115" cy="58" r="25" fill="#2E6B00"/>
+                                <circle cx="155" cy="62" r="22" fill="#D32F2F"/>
+                                <ellipse cx="198" cy="52" rx="16" ry="30" fill="#FDD835"/>
+                                <path d="M210,75 Q225,30 245,65" fill="#409300"/>
+                                <!-- Kraft Box -->
+                                <rect x="70" y="75" width="180" height="95" rx="6" fill="#D7B384" stroke="#A67C46" stroke-width="2.5"/>
+                                <use href="#spelo-box-stamp" x="98" y="96" width="124" height="42"/>
+                                <!-- Courgettes & Onions outside -->
+                                <rect x="52" y="152" width="46" height="14" rx="7" fill="#1B5E20"/>
+                                <circle cx="248" cy="164" r="12" fill="#D7A15C"/>
+                            </svg>
+                            <h3 class="font-serif font-bold text-2xl text-soil-humus">Овощные наборы</h3>
+                            <p class="text-xs sm:text-sm text-stone-700 mt-2">До <strong>9 видов</strong> сезонных овощей и зелени</p>
+                            <p class="text-sm font-bold text-sun-deep mt-2">От 790 ₽ за коробку</p>
+                        </div>
+                        <div class="mt-6">
+                            <button onclick="startSubscriptionFlow('veg', 'M')" class="px-7 py-3 rounded-xl bg-[#FFA500] hover:bg-[#E68A00] text-soil-humus font-display font-bold text-xs shadow-md transition">
+                                Выбери меня
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: Zero-Waste Market ("Рынок") -->
+                    <div class="bg-white/85 backdrop-blur rounded-3xl p-7 text-center shadow-xl border border-amber-200/70 flex flex-col justify-between hover:-translate-y-1 transition">
+                        <div>
+                            <svg class="w-full h-44 mx-auto mb-4" viewBox="0 0 320 190" fill="none">
+                                <ellipse cx="160" cy="172" rx="125" ry="12" fill="#241511" fill-opacity="0.18"/>
+                                <!-- Kraft Box on Right -->
+                                <rect x="145" y="65" width="135" height="100" rx="6" fill="#D7B384" stroke="#A67C46" stroke-width="2.5"/>
+                                <use href="#spelo-box-stamp" x="162" y="92" width="102" height="36"/>
+                                <!-- Glass Jars & Bottles on Left -->
+                                <rect x="58" y="88" width="45" height="78" rx="8" fill="#795548" stroke="#FFF9EC" stroke-width="2"/>
+                                <rect x="92" y="102" width="42" height="66" rx="8" fill="#FFB300" stroke="#FFF9EC" stroke-width="2"/>
+                                <rect x="124" y="95" width="42" height="72" rx="8" fill="#DCE775" stroke="#FFF9EC" stroke-width="2"/>
+                            </svg>
+                            <h3 class="font-serif font-bold text-2xl text-soil-humus">Рынок</h3>
+                            <p class="text-xs sm:text-sm text-stone-700 mt-2">Многоразовая тара без пластика, соленья, мёд и бакалея</p>
+                            <p class="text-sm font-bold text-sun-deep mt-2">Минимальный заказ — 1 200 ₽</p>
+                        </div>
+                        <div class="mt-6">
+                            <button onclick="startSubscriptionFlow('fruit', 'M')" class="px-7 py-3 rounded-xl bg-[#FFA500] hover:bg-[#E68A00] text-soil-humus font-display font-bold text-xs shadow-md transition">
+                                Выбери меня
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. "КАК ЭТО РАБОТАЕТ" + "КАКИМ БЫ СТРАННЫМ ТЫ НИ БЫЛ" + "СЛЕДИТЕ ЗА КОРОБКАМИ" + "НАШЕ ОБЕЩАНИЕ ДОСТАВКИ" -->
+        <section id="sec-how-it-works" class="py-16 sm:py-24 px-4 sm:px-8 relative z-10">
+            <div class="max-w-7xl mx-auto space-y-20">
+
+                <!-- Part 3A: 3-Column Visual "Каким бы странным ты ни был / Как это работает" -->
+                <div class="bg-white/95 rounded-[36px] p-8 sm:p-12 shadow-xl border border-stone-200/80">
+                    <div class="text-center max-w-3xl mx-auto mb-12">
+                        <span class="text-xs font-display font-bold uppercase tracking-wider text-sun-deep">Как это работает</span>
+                        <h2 class="font-serif font-bold text-3xl sm:text-5xl text-soil-humus mt-2">
+                            Каким бы странным ты ни был
+                        </h2>
+                        <p class="text-sm sm:text-base text-stone-600 mt-3">
+                            Только яблоки, никакого лука? Больше салатных листьев, меньше кинзы? В <strong>С.П.Е.Л.О.</strong> каждая неделя отличается от предыдущей, и самое главное — вы сами выбираете, кого спасать. Вот как это работает:
+                        </p>
+                    </div>
+
+                    <div class="grid md:grid-cols-3 gap-8 text-center">
+                        <!-- Step 1 -->
+                        <div class="flex flex-col items-center">
+                            <div class="w-full h-56 rounded-2xl bg-[#F3E9D7] mb-6 flex items-center justify-center p-4 border border-amber-200/50 relative overflow-hidden">
+                                <svg class="w-48 h-44" viewBox="0 0 220 180" fill="none">
+                                    <!-- Hand dropping a pear into the SPELO box -->
+                                    <path d="M110,8 L110,32" stroke="#241511" stroke-width="6" stroke-linecap="round"/>
+                                    <path d="M110,35 C96,52 96,72 110,76 C124,72 124,52 110,35 Z" fill="#85B81A"/>
+                                    <rect x="40" y="88" width="140" height="80" rx="6" fill="#D7B384" stroke="#A67C46" stroke-width="2.5"/>
+                                    <use href="#spelo-box-stamp" x="62" y="106" width="96" height="34"/>
+                                </svg>
+                            </div>
+                            <h3 class="font-serif font-bold text-2xl text-soil-humus mb-2">1. Выберите коробку</h3>
+                            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+                                Маленький, средний или большой? Фрукты, овощи или и то, и другое? Какой бы ящик вы ни выбрали, вы будете бороться с пищевыми отходами и поддерживать трудолюбивых фермеров Дона.
+                            </p>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="flex flex-col items-center">
+                            <div class="w-full h-56 rounded-2xl bg-[#F3E9D7] mb-6 flex items-center justify-center p-4 border border-amber-200/50 relative overflow-hidden">
+                                <svg class="w-48 h-44" viewBox="0 0 220 180" fill="none">
+                                    <!-- Swapping bell pepper and pears illustration -->
+                                    <circle cx="110" cy="52" r="24" fill="#E53935"/>
+                                    <path d="M110,28 L110,18" stroke="#2E6B00" stroke-width="5" stroke-linecap="round"/>
+                                    <path d="M85,85 L75,112 M110,85 L110,114 M135,85 L145,112" stroke="#2E6B00" stroke-width="3" stroke-linecap="round"/>
+                                    <circle cx="75" cy="140" r="18" fill="#85B81A"/>
+                                    <rect x="98" y="132" width="42" height="16" rx="8" fill="#FF7043"/>
+                                    <circle cx="156" cy="140" r="16" fill="#FFA500"/>
+                                </svg>
+                            </div>
+                            <h3 class="font-serif font-bold text-2xl text-soil-humus mb-2">2. Совершите обмены</h3>
+                            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+                                Мы сообщим вам, когда список урожая, подлежащего спасению на этой неделе, будет готов — проверьте содержимое вашей коробки и замените всё, что вам не нравится.
+                            </p>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="flex flex-col items-center">
+                            <div class="w-full h-56 rounded-2xl bg-[#F3E9D7] mb-6 flex items-center justify-center p-4 border border-amber-200/50 relative overflow-hidden">
+                                <svg class="w-48 h-44" viewBox="0 0 220 180" fill="none">
+                                    <!-- Door & SPELO box waiting in the morning -->
+                                    <rect x="65" y="22" width="75" height="135" rx="4" fill="#FFA500"/>
+                                    <rect x="77" y="34" width="20" height="20" fill="#FFF9EC"/>
+                                    <rect x="105" y="34" width="20" height="20" fill="#FFF9EC"/>
+                                    <rect x="77" y="62" width="20" height="20" fill="#FFF9EC"/>
+                                    <rect x="105" y="62" width="20" height="20" fill="#FFF9EC"/>
+                                    <rect x="115" y="112" width="68" height="46" rx="5" fill="#FFF9EC" stroke="#FFA500" stroke-width="3"/>
+                                    <use href="#spelo-official-logo" x="121" y="122" width="56" height="24"/>
+                                </svg>
+                            </div>
+                            <h3 class="font-serif font-bold text-2xl text-soil-humus mb-2">3. Просыпайтесь и наслаждайтесь</h3>
+                            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+                                Чтобы снизить уровень выбросов CO₂, мы объединяем маршруты по районам и доставляем коробку к вашему порогу — вовремя к семейному завтраку.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Section CTA Button ("Начните спасать природу") -->
+                    <div class="mt-10 text-center">
+                        <button onclick="startSubscriptionFlow()" class="px-8 py-4 rounded-xl bg-[#FFA500] hover:bg-[#E68A00] text-soil-humus font-display font-extrabold text-xs sm:text-sm shadow-lg transition">
+                            Начните спасать природу →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Part 3B: "Следите за своими коробками" (Skip / Swap / Cancel from Screenshot) -->
+                <div class="bg-white/95 rounded-[36px] p-8 sm:p-12 shadow-xl border border-stone-200/80">
+                    <h2 class="font-serif font-bold text-3xl sm:text-5xl text-center text-soil-humus mb-12">
+                        Следите за своими коробками
+                    </h2>
+
+                    <div class="grid md:grid-cols-3 gap-10 text-center">
+                        <!-- 1. Beach Umbrella & Bucket: Пропустить коробку -->
+                        <div class="flex flex-col items-center">
+                            <svg class="w-44 h-36 mb-4" viewBox="0 0 200 150" fill="none">
+                                <!-- Beach Umbrella -->
+                                <path d="M25,75 C40,22 125,22 140,75 Z" fill="#3B5220"/>
+                                <line x1="82" y1="25" x2="92" y2="132" stroke="#3B5220" stroke-width="4"/>
+                                <!-- Orange Sand Bucket -->
+                                <polygon points="108,88 152,88 145,132 115,132" fill="#FFA500"/>
+                                <path d="M108,88 Q130,65 152,88" stroke="#FFA500" stroke-width="3" fill="none"/>
+                                <line x1="20" y1="132" x2="180" y2="132" stroke="#FFA500" stroke-width="5" stroke-linecap="round"/>
+                            </svg>
+                            <h3 class="font-serif font-bold text-2xl text-soil-humus mb-2">Пропустить коробку</h3>
+                            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+                                Фруктовая ваза ещё полна или уезжаете в отпуск? Управляйте своей коробкой через Личный кабинет и используйте кнопку «Пропустить коробку» на срок до четырёх недель.
+                            </p>
+                        </div>
+
+                        <!-- 2. Swap Boxes with Green Arrows: Поменяйте свою коробку -->
+                        <div class="flex flex-col items-center">
+                            <svg class="w-44 h-36 mb-4" viewBox="0 0 200 150" fill="none">
+                                <!-- Green Top Arrow -->
+                                <path d="M72,36 L95,18 L125,38" stroke="#3B5220" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+                                <polygon points="128,28 135,44 118,44" fill="#3B5220"/>
+                                <!-- Box Left -->
+                                <rect x="24" y="55" width="70" height="48" rx="4" fill="#FFA500"/>
+                                <use href="#spelo-official-logo" x="29" y="65" width="60" height="26"/>
+                                <!-- Box Right -->
+                                <rect x="106" y="62" width="70" height="48" rx="4" fill="#FFEAB6" stroke="#FFA500" stroke-width="2"/>
+                                <use href="#spelo-official-logo" x="111" y="72" width="60" height="26"/>
+                                <!-- Green Bottom Arrow -->
+                                <path d="M128,122 L105,138 L75,118" stroke="#3B5220" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+                                <polygon points="72,128 65,112 82,112" fill="#3B5220"/>
+                            </svg>
+                            <h3 class="font-serif font-bold text-2xl text-soil-humus mb-2">Поменяйте свою коробку</h3>
+                            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+                                Если вам нужна коробка побольше для гостей или просто хочется больше фруктов на следующей неделе, вы можете в любой момент выбрать другой тип коробки.
+                            </p>
+                        </div>
+
+                        <!-- 3. Door with X: Прекратите спасать -->
+                        <div class="flex flex-col items-center">
+                            <svg class="w-44 h-36 mb-4" viewBox="0 0 200 150" fill="none">
+                                <rect x="58" y="15" width="68" height="120" rx="4" fill="#FFA500"/>
+                                <rect x="68" y="25" width="14" height="14" fill="#FFF9EC"/>
+                                <rect x="86" y="25" width="14" height="14" fill="#FFF9EC"/>
+                                <rect x="104" y="25" width="14" height="14" fill="#FFF9EC"/>
+                                <rect x="68" y="45" width="14" height="14" fill="#FFF9EC"/>
+                                <rect x="86" y="45" width="14" height="14" fill="#FFF9EC"/>
+                                <rect x="104" y="45" width="14" height="14" fill="#FFF9EC"/>
+                                <!-- Box at doorstep -->
+                                <rect x="105" y="96" width="58" height="40" rx="4" fill="#FFF9EC" stroke="#FFA500" stroke-width="3"/>
+                                <use href="#spelo-official-logo" x="110" y="104" width="48" height="22"/>
+                                <!-- Dark Red Cancel Badge -->
+                                <circle cx="134" cy="78" r="18" fill="#6D071A"/>
+                                <path d="M127,71 L141,85 M141,71 L127,85" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>
+                            </svg>
+                            <h3 class="font-serif font-bold text-2xl text-soil-humus mb-2">Прекратите спасать</h3>
+                            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+                                Если вы решите покинуть С.П.Е.Л.О., просто зайдите в свой аккаунт и отмените подписку в 1 клик. Вы можете вернуться в любое время — мы всегда будем рады.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mt-10 text-center">
+                        <button onclick="startSubscriptionFlow()" class="px-8 py-4 rounded-xl bg-[#FFA500] hover:bg-[#E68A00] text-soil-humus font-display font-extrabold text-xs sm:text-sm shadow-lg transition">
+                            Начните спасать природу →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Part 3C: "Наше обещание доставки" (50/50 Doorstep & Promise Card) -->
+                <div class="rounded-[36px] overflow-hidden shadow-2xl grid lg:grid-cols-12 bg-[#ECECEB] border border-white">
+                    <!-- Left: Doorstep Illustration with SPELO Box on Checkerboard Porch -->
+                    <div class="lg:col-span-6 min-h-[320px] bg-[#2D3748] relative flex items-end justify-center p-8 overflow-hidden">
+                        <svg class="w-full h-full max-h-80" viewBox="0 0 400 280" fill="none">
+                            <!-- Brick Wall Left & Right -->
+                            <rect x="0" y="0" width="70" height="230" fill="#B85D3B"/>
+                            <rect x="330" y="0" width="70" height="230" fill="#B85D3B"/>
+                            <!-- Mint Door -->
+                            <rect x="70" y="0" width="260" height="230" fill="#A3C6B1" stroke="#374151" stroke-width="10"/>
+                            <rect x="105" y="25" width="80" height="90" fill="#7D9D8C" stroke="#5F7D6E" stroke-width="4"/>
+                            <rect x="215" y="25" width="80" height="90" fill="#7D9D8C" stroke="#5F7D6E" stroke-width="4"/>
+                            <rect x="105" y="135" width="80" height="65" fill="#8FB39E" stroke="#5F7D6E" stroke-width="4"/>
+                            <rect x="215" y="135" width="80" height="65" fill="#8FB39E" stroke="#5F7D6E" stroke-width="4"/>
+                            <!-- Checkerboard Tile Step -->
+                            <rect x="40" y="230" width="320" height="50" fill="#F3F4F6"/>
+                            <path d="M40,245 L360,245 M40,260 L360,260 M80,230 L80,280 M120,230 L120,280 M160,230 L160,280 M200,230 L200,280 M240,230 L240,280 M280,230 L280,280 M320,230 L320,280" stroke="#1F2937" stroke-width="4"/>
+                            <!-- Kraft Box with SPELO Logo on the Porch -->
+                            <rect x="95" y="150" width="135" height="82" rx="5" fill="#D7B384" stroke="#9C7343" stroke-width="3"/>
+                            <use href="#spelo-box-stamp" x="112" y="170" width="100" height="36"/>
+                            <!-- Green Plant Pot on Right -->
+                            <rect x="305" y="185" width="65" height="85" rx="4" fill="#B4652F"/>
+                            <circle cx="325" cy="155" r="30" fill="#2E6B00"/>
+                            <circle cx="350" cy="140" r="26" fill="#409300"/>
+                        </svg>
+                    </div>
+
+                    <!-- Right: Text Promises -->
+                    <div class="lg:col-span-6 p-8 sm:p-14 flex flex-col justify-center text-center">
+                        <h3 class="font-serif font-bold text-3xl sm:text-4xl text-soil-humus mb-6">
+                            Наше обещание доставки
+                        </h3>
+                        <div class="space-y-4 text-xs sm:text-sm text-stone-700 font-medium leading-relaxed max-w-lg mx-auto">
+                            <p>Мы оставим вашу коробку С.П.Е.Л.О. именно там, где вы нам укажете.</p>
+                            <p>Мы тихие и внимательные — не разбудим семью ранним утром.</p>
+                            <p>Мы вышлем фотографию вашей коробки в Личный кабинет и мессенджер, как только доставим её.</p>
+                            <p>Мы позаботимся о том, чтобы ваша коробка была плотно запечатана и защищена от дождя в перерабатываемой упаковке.</p>
+                            <p>И мы берём на себя полную ответственность за свежесть — наша команда заботы о клиентах всегда готова помочь.</p>
+                        </div>
+                        <div class="mt-8">
+                            <button onclick="startSubscriptionFlow()" class="px-7 py-3.5 rounded-xl bg-[#FFA500] hover:bg-[#E68A00] text-soil-humus font-display font-bold text-xs shadow-md transition">
+                                Начните спасать природу
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             ZONE 2: GRASS & FOLIAGE (#409300 -> #2E6B00)
+             4. "ВОТ ЧТО МЫ СПАСАЕМ" (Weekly Rescue Lists by Box Size)
+             5. "НАША МИССИЯ" + FAMILY HARVEST CALCULATOR
+             6. "ЛИЦА ЗА ПРОИЗВОДСТВОМ" + B2B OFFER FOR NEW FARMERS
+             ===================================================================== -->
+        <section id="sec-rescued-weekly" class="py-16 sm:py-24 px-4 sm:px-8 relative overflow-hidden">
+            <div class="texture-overlay texture-foliage absolute inset-0"></div>
+
+            <div class="max-w-7xl mx-auto relative z-10 space-y-16">
+
+                <!-- 4. "ВОТ ЧТО МЫ СПАСАЕМ" (Interactive Weekly Schedule & Detailed Tables from Screenshots) -->
+                <div class="bg-white/95 rounded-[36px] p-6 sm:p-12 shadow-2xl border border-white">
+                    <div class="text-center max-w-3xl mx-auto">
+                        <span class="px-3.5 py-1 rounded-full bg-grass-main/15 text-grass-deep font-display font-bold text-xs uppercase">Фрукты и овощи недели</span>
+                        <h2 class="font-serif font-bold text-3xl sm:text-5xl text-soil-humus mt-3">
+                            Вот что мы спасаем.
+                        </h2>
+                        <p class="text-xs sm:text-sm text-stone-600 mt-3">
+                            В С.П.Е.Л.О. каждая неделя отличается от предыдущей. И вы можете обменять любой фрукт или овощ на что-нибудь по своему вкусу из списка спасённых продуктов.
+                        </p>
+                    </div>
+
+                    <!-- Two Week Selector Columns (14 Oct - 20 Oct / 21 Oct - 27 Oct) -->
+                    <div class="grid sm:grid-cols-2 gap-6 max-w-4xl mx-auto mt-10">
+                        <div id="week-card-1" class="p-6 rounded-2xl border-2 border-stone-200 text-center transition">
+                            <h3 class="font-serif font-bold text-2xl text-sun-deep underline">14 октября - 20 октября</h3>
+                            <p class="text-xs text-stone-600 mt-2">
+                                Для коробок, доставленных в период с <strong>19:00 среды 14 октября</strong> до <strong>07:00 четверга 21 октября</strong>.
+                            </p>
+                            <button onclick="switchRescueWeek(1)" id="week-btn-1" class="mt-4 px-5 py-2.5 rounded-xl bg-stone-200 hover:bg-sun-main text-soil-humus font-display font-bold text-xs transition">
+                                Посмотрите, что внутри
+                            </button>
+                        </div>
+
+                        <div id="week-card-2" class="p-6 rounded-2xl border-2 border-sun-main bg-sun-cream text-center shadow-md transition">
+                            <h3 class="font-serif font-bold text-2xl text-sun-deep underline">21 октября - 27 октября</h3>
+                            <p class="text-xs text-stone-600 mt-2">
+                                Для коробок, доставленных в период с <strong>19:00 среды 21 октября</strong> до <strong>07:00 четверга 28 октября</strong>.
+                            </p>
+                            <button onclick="switchRescueWeek(2)" id="week-btn-2" class="mt-4 px-5 py-2.5 rounded-xl bg-[#FFA500] text-soil-humus font-display font-bold text-xs shadow transition">
+                                Посмотрите, что внутри (Активно)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Detailed Breakdown Table ("Список спасательных работ на этой неделе") -->
+                    <div class="mt-12 pt-10 border-t border-stone-200">
+                        <div class="text-center mb-10">
+                            <h3 class="font-serif font-bold text-2xl sm:text-4xl text-soil-humus">
+                                Список спасательных работ на этой неделе.
+                            </h3>
+                            <p id="active-week-subtitle" class="font-bold text-sm text-grass-deep mt-1">21 октября - 27 октября</p>
+                        </div>
+
+                        <!-- Table 1: Коробки с фруктами и овощами (4 sizes: Большой, Середина, Маленький, Очень маленький) -->
+                        <div class="mb-12">
+                            <h4 class="font-serif font-bold text-2xl text-center text-soil-humus mb-1">Коробки с фруктами и овощами</h4>
+                            <p class="text-center text-xs text-stone-500 mb-6">Точный состав спасённого урожая по размерам бокса</p>
+
+                            <div id="rescue-table-mix" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
+                                <!-- Populated dynamically by JS for Week 1 & Week 2 -->
+                            </div>
+                        </div>
+
+                        <!-- Table 2: Овощные наборы (3 sizes: Большой, Середина, Маленький) -->
+                        <div>
+                            <h4 class="font-serif font-bold text-2xl text-center text-soil-humus mb-1">Овощные наборы</h4>
+                            <p class="text-center text-xs text-stone-500 mb-6">100% сезонных овощей и зелени с локальных огородов</p>
+
+                            <div id="rescue-table-veg" class="grid sm:grid-cols-3 gap-6 text-center max-w-5xl mx-auto">
+                                <!-- Populated dynamically by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Banner inside "Вот что мы спасаем" -->
+                    <div class="mt-12 rounded-3xl bg-[#EBEAE6] p-8 sm:p-10 grid md:grid-cols-12 gap-6 items-center">
+                        <div class="md:col-span-7 space-y-3">
+                            <h3 class="font-serif font-bold text-2xl sm:text-4xl text-soil-humus">
+                                Ещё не являетесь участником С.П.Е.Л.О.?
+                            </h3>
+                            <p class="text-xs sm:text-sm text-stone-700 leading-relaxed">
+                                Поддержите производителей Ростовской области и боритесь с отходами, заказав доставку необычных и вкусных фруктов, овощей и многого другого.
+                            </p>
+                            <div class="pt-2">
+                                <button onclick="startSubscriptionFlow()" class="px-6 py-3.5 rounded-xl bg-[#FFA500] hover:bg-[#E68A00] text-soil-humus font-display font-bold text-xs shadow-md transition">
+                                    Присоединяйтесь к спасательной операции!
+                                </button>
+                            </div>
+                        </div>
+                        <div class="md:col-span-5 flex justify-center">
+                            <svg class="w-56 h-36" viewBox="0 0 260 160" fill="none">
+                                <rect x="45" y="45" width="170" height="100" rx="8" fill="#D7B384" stroke="#9C7343" stroke-width="3"/>
+                                <circle cx="95" cy="38" r="20" fill="#2E6B00"/>
+                                <circle cx="135" cy="35" r="22" fill="#E53935"/>
+                                <circle cx="175" cy="40" r="18" fill="#FFA500"/>
+                                <use href="#spelo-box-stamp" x="75" y="72" width="110" height="40"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. "НАША МИССИЯ" (2x2 Checkerboard from Screenshot + B-Corp/Eco Standard + Family Calculator) -->
+                <div id="sec-our-mission" class="space-y-12">
+                    <div class="rounded-[36px] overflow-hidden shadow-2xl bg-white border border-white">
+                        <!-- Row 1: Quirky Carrot in Hand + "Продовольственная система находится в плачевном состоянии" -->
+                        <div class="grid lg:grid-cols-2">
+                            <!-- Left Visual: Bright Orange Art with Quirky Small Carrot in Hand -->
+                            <div class="bg-[#EA5B25] min-h-[340px] flex items-center justify-center p-8 relative overflow-hidden">
+                                <svg class="w-64 h-72 drop-shadow-xl" viewBox="0 0 240 280" fill="none">
+                                    <!-- Stylized Hand with Botanical Tattoo holding a quirky stout carrot -->
+                                    <path d="M100,280 L102,175 C90,165 82,145 85,120 L88,75 C89,66 98,66 99,75 L100,115 L106,55 C107,46 117,46 118,55 L118,112 L126,62 C127,54 137,54 137,63 L134,118 L145,82 C148,74 157,77 154,86 L142,145 C140,162 132,172 128,180 L132,280 Z" fill="#F5CBA7"/>
+                                    <!-- Botanical Tattoo Lines on Forearm -->
+                                    <path d="M114,275 L114,195 M114,245 Q102,235 105,222 M114,225 Q126,215 123,202 M114,208 Q104,198 108,188" stroke="#2C3E50" stroke-width="2.5" stroke-linecap="round"/>
+                                    <!-- Quirky Short Yellow-Orange Carrot held between fingers -->
+                                    <path d="M106,92 L138,92 L124,162 C122,168 118,168 116,162 Z" fill="#FFD166" stroke="#FFA500" stroke-width="2"/>
+                                    <path d="M114,106 L128,106 M118,124 L126,124 M119,140 L124,140" stroke="#E68A00" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+
+                            <!-- Right Text -->
+                            <div class="bg-[#EBEAE6] p-8 sm:p-14 flex flex-col justify-center text-center">
+                                <span class="text-xs font-display font-bold uppercase tracking-wider text-sun-deep mb-2">Наша миссия</span>
+                                <h3 class="font-serif font-bold text-2xl sm:text-4xl text-soil-humus mb-4 leading-snug">
+                                    Продовольственная система находится в плачевном состоянии.
+                                </h3>
+                                <p class="text-xs sm:text-sm font-bold text-soil-humus mb-4 leading-relaxed">
+                                    И дело не только в лишнем пластике. От ненужных дальних перевозок до строгой отбраковки по внешнему виду — отходы заложены в каждый уголок пищевой цепочки.
+                                </p>
+                                <p class="text-xs sm:text-sm text-stone-700 leading-relaxed">
+                                    Супермаркеты выбирают товары по косметическому шаблону, отменяя заказы фермерам в последнюю минуту, если меняется спрос. Покупатели ожидают клубнику зимой и одинаковые помидоры круглый год, вместо того чтобы есть то, что созрело в сезон на родной земле.
+                                </p>
+                                <p class="text-sm font-serif italic font-bold text-soil-humus mt-4">
+                                    Так кого же вы называете странным?
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Row 2: "Горжусь тем, что я — не такой, как все" + Flat-lay SPELO Box -->
+                        <div class="grid lg:grid-cols-2">
+                            <!-- Left Text -->
+                            <div class="bg-[#F3F2EE] p-8 sm:p-14 flex flex-col justify-center text-center order-2 lg:order-1">
+                                <h3 class="font-serif font-bold text-2xl sm:text-4xl text-soil-humus mb-4">
+                                    Горжусь тем, что я — не такой, как все.
+                                </h3>
+                                <p class="text-xs sm:text-sm font-bold text-soil-humus mb-4">
+                                    Мы создаём движение С.П.Е.Л.О., основанное на честном подходе к питанию. Это часть более справедливой продовольственной системы, которая:
+                                </p>
+                                <ul class="space-y-2.5 text-xs sm:text-sm text-stone-700 font-medium">
+                                    <li>• Считает, что всю спелую еду следует ценить — независимо от того, как она выглядит.</li>
+                                    <li>• Поддерживает локальных фермеров и выплачивает им справедливую цену без штрафов.</li>
+                                    <li>• Принимает сезонность и естественные несовершенства природы.</li>
+                                    <li>• Прославляет кулинарное творчество на семейной кухне.</li>
+                                </ul>
+                                <div class="mt-7">
+                                    <button onclick="startSubscriptionFlow()" class="px-7 py-3.5 rounded-xl bg-[#FFA500] hover:bg-[#E68A00] text-soil-humus font-display font-bold text-xs shadow-md transition">
+                                        Начните спасать природу
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Right Visual: Top-Down Open SPELO Box spilling carrots & tomatoes -->
+                            <div class="bg-[#D5C7AD] min-h-[340px] flex items-center justify-center p-8 relative overflow-hidden order-1 lg:order-2">
+                                <svg class="w-80 h-64 drop-shadow-xl" viewBox="0 0 320 250" fill="none">
+                                    <!-- Spilled quirky carrots & tomatoes on table -->
+                                    <path d="M85,80 L98,35 L108,82 Z" fill="#FF7043"/>
+                                    <path d="M112,78 L122,28 L134,78 Z" fill="#FF8A65"/>
+                                    <path d="M140,80 L156,42 L162,82 Z" fill="#FF7043"/>
+                                    <circle cx="178" cy="58" r="11" fill="#E53935"/>
+                                    <circle cx="198" cy="64" r="11" fill="#D32F2F"/>
+                                    <circle cx="185" cy="78" r="11" fill="#C62828"/>
+                                    <!-- Pineapple / Greens on right -->
+                                    <path d="M215,90 L248,45 L235,98 Z" fill="#2E6B00"/>
+                                    <path d="M225,95 L268,62 L245,105 Z" fill="#409300"/>
+                                    <!-- Kraft Box Body -->
+                                    <rect x="75" y="95" width="170" height="135" rx="6" fill="#D7B384" stroke="#A67C46" stroke-width="3"/>
+                                    <polygon points="75,95 42,72 75,135" fill="#C49D6C"/>
+                                    <polygon points="245,95 278,72 245,135" fill="#C49D6C"/>
+                                    <use href="#spelo-box-stamp" x="100" y="135" width="120" height="44"/>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- Bottom Mission Statement Strip -->
+                        <div class="p-8 sm:p-10 bg-white text-center border-t border-stone-200">
+                            <h4 class="font-display font-bold text-lg sm:text-2xl text-soil-humus max-w-3xl mx-auto">
+                                Мы гордимся тем, что развиваем стандарт ответственного агро-потребления на Юге России.
+                            </h4>
+                            <p class="text-xs sm:text-sm text-stone-600 mt-2 max-w-2xl mx-auto">
+                                В конце каждой недели невостребованные запасы передаются благотворительным кухням и приютам, а каждая семья видит свой точный экологический вклад в килограммах, литрах воды и рублях.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- KEPT FEATURE: FAMILY HARVEST & BUDGET SAVINGS CALCULATOR -->
+                    <div id="impact-calculator" class="bg-sun-cream rounded-[36px] p-6 sm:p-10 shadow-2xl border-2 border-white">
+                        <div class="grid lg:grid-cols-12 gap-8 items-center">
+                            <div class="lg:col-span-5 space-y-5">
+                                <span class="px-3.5 py-1 rounded-full bg-grass-main/15 text-grass-deep font-display font-bold text-xs uppercase">
+                                    Интерактивный калькулятор семьи
+                                </span>
+                                <h3 class="font-serif font-bold text-2xl sm:text-4xl text-soil-humus">
+                                    Посчитайте, сколько урожая и бюджета спасёт ваша семья
+                                </h3>
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-stone-500 mb-2">1. Размер вашей семьи:</label>
+                                    <div class="grid grid-cols-3 gap-2">
+                                        <button type="button" onclick="setFamilyCalc(1, 5.5, 620, 'S')" id="calc-fam-1" class="p-3 rounded-xl border-2 border-stone-200 text-xs font-bold text-soil-humus">1–2 чел. (S)</button>
+                                        <button type="button" onclick="setFamilyCalc(2, 9.0, 980, 'M')" id="calc-fam-2" class="p-3 rounded-xl border-2 border-grass-main bg-grass-main/10 text-xs font-bold text-soil-humus">3–4 чел. (M)</button>
+                                        <button type="button" onclick="setFamilyCalc(3, 13.0, 1420, 'L')" id="calc-fam-3" class="p-3 rounded-xl border-2 border-stone-200 text-xs font-bold text-soil-humus">5+ чел. (L)</button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <label class="text-xs font-bold uppercase text-stone-500">2. Срок подписки:</label>
+                                        <span id="calc-months-out" class="font-display font-bold text-base text-grass-deep">6 месяцев</span>
+                                    </div>
+                                    <input id="calc-months-slider" type="range" min="1" max="12" value="6" class="w-full" oninput="updateFamilyCalc()">
+                                </div>
+                            </div>
+
+                            <div class="lg:col-span-7 grid sm:grid-cols-2 gap-4">
+                                <div class="p-5 rounded-2xl bg-amber-500/15 border border-amber-500/30">
+                                    <span class="text-xs font-bold uppercase text-soil-clay">Спасено урожая от списания</span>
+                                    <div id="calc-kg-out" class="font-display font-black text-3xl text-soil-humus my-1">216 кг</div>
+                                    <span id="calc-baskets-out" class="text-xs text-stone-600">≈ 27 полных корзин свежей еды</span>
+                                </div>
+                                <div class="p-5 rounded-2xl bg-grass-main/15 border border-grass-main/30">
+                                    <span class="text-xs font-bold uppercase text-grass-deep">Экономия бюджета семьи</span>
+                                    <div id="calc-rub-out" class="font-display font-black text-3xl text-grass-deep my-1">23 520 ₽</div>
+                                    <span class="text-xs text-stone-600">Выгода до 35% относительно супермаркетов</span>
+                                </div>
+                                <div class="p-5 rounded-2xl bg-sky-500/10 border border-sky-500/25">
+                                    <span class="text-xs font-bold uppercase text-sky-900">Сохранено пресной воды</span>
+                                    <div id="calc-water-out" class="font-display font-black text-2xl text-soil-humus my-1">43 200 л</div>
+                                    <span class="text-xs text-stone-600">Затрачено на полив спасённых плодов</span>
+                                </div>
+                                <div class="p-5 rounded-2xl bg-soil-humus text-sun-cream flex flex-col justify-between">
+                                    <div>
+                                        <span class="text-xs font-bold uppercase text-sun-gold">Предотвращено выбросов CO₂</span>
+                                        <div id="calc-co2-out" class="font-display font-black text-2xl text-white my-1">410 кг</div>
+                                    </div>
+                                    <button onclick="startSubscriptionFlow()" class="mt-2 w-full py-2.5 rounded-xl bg-[#FFA500] text-soil-humus font-display font-bold text-xs">
+                                        Начните спасать природу →
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. "ЛИЦА, СТОЯЩИЕ ЗА ПРОИЗВОДСТВОМ" + B2B COMMERCIAL PROPOSAL FOR NEW FARMERS -->
+                <div id="sec-producers-b2b" class="space-y-8">
+                    <!-- Part 6A: Oddbox Split Screen ("Лица, стоящие за производством фруктов и овощей") -->
+                    <div class="rounded-[36px] overflow-hidden shadow-2xl grid lg:grid-cols-12 border border-white/30">
+                        <!-- Left Sage Green Block -->
+                        <div class="lg:col-span-6 bg-[#8F9B79] p-8 sm:p-14 flex flex-col justify-center text-center">
+                            <h2 class="font-serif font-bold text-3xl sm:text-5xl text-soil-humus leading-tight mb-5">
+                                Лица, стоящие за производством фруктов и овощей.
+                            </h2>
+                            <p class="text-xs sm:text-sm text-soil-humus/90 leading-relaxed max-w-md mx-auto mb-7 font-medium">
+                                На сегодняшний день мы сотрудничаем более чем с <strong>24 фермерскими хозяйствами и локальными огородами</strong> Ростовской области и Юга. Мы гордимся тем, что предоставляем им гибкий и надёжный рынок сбыта для идеально съедобных, спелых фруктов и овощей.
+                            </p>
+                            <div>
+                                <a href="#b2b-farmer-offer" class="inline-block px-7 py-3.5 rounded-xl bg-soil-humus hover:bg-soil-loam text-sun-cream font-display font-bold text-xs transition">
+                                    Узнать больше и стать поставщиком
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Right Deep Olive Video/Story Card (Orchard Farmer) -->
+                        <div class="lg:col-span-6 bg-[#3E5214] p-6 sm:p-10 flex flex-col justify-center">
+                            <div class="bg-soil-humus rounded-2xl p-3 shadow-2xl">
+                                <div class="relative rounded-xl overflow-hidden bg-gradient-to-b from-sky-200 via-[#557A26] to-[#2E4411] h-64 sm:h-72 flex items-end justify-center">
+                                    <!-- Illustrated Orchard & Farmer Portrait with Subtitle -->
+                                    <svg class="w-full h-full object-cover" viewBox="0 0 500 280" fill="none">
+                                        <!-- Orchard Rows in Perspective -->
+                                        <rect width="500" height="120" fill="#D7E3DC"/>
+                                        <polygon points="0,120 220,110 120,280 0,280" fill="#3A5F1B"/>
+                                        <polygon points="500,120 280,110 380,280 500,280" fill="#3A5F1B"/>
+                                        <polygon points="120,280 220,110 280,110 380,280" fill="#658B38"/>
+                                        <!-- Apple Trees with Red Apples -->
+                                        <circle cx="85" cy="115" r="55" fill="#2E4E14"/>
+                                        <circle cx="415" cy="115" r="55" fill="#2E4E14"/>
+                                        <circle cx="70" cy="105" r="6" fill="#E53935"/>
+                                        <circle cx="95" cy="120" r="6" fill="#E53935"/>
+                                        <circle cx="110" cy="95" r="6" fill="#E53935"/>
+                                        <circle cx="395" cy="105" r="6" fill="#E53935"/>
+                                        <circle cx="425" cy="122" r="6" fill="#E53935"/>
+                                        <circle cx="435" cy="95" r="6" fill="#E53935"/>
+                                        <!-- Farmer Figure -->
+                                        <path d="M185,280 C185,205 315,205 315,280 Z" fill="#4E342E"/>
+                                        <circle cx="250" cy="155" r="34" fill="#F5CBA7"/>
+                                        <path d="M220,140 C225,118 275,118 280,140" fill="#CFD8DC"/>
+                                    </svg>
+                                    <div class="absolute inset-x-0 bottom-3 px-4 text-center">
+                                        <span class="bg-black/75 text-white text-[11px] sm:text-xs px-3 py-1 rounded">
+                                            «Яблоки немного похожи на людей: они растут под южным солнцем и не обязаны быть близнецами»
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center text-[11px] font-mono uppercase tracking-wider text-sun-cream/80 mt-3 px-1">
+                                <span>ИСТОЧНИК: САДЫ ПРИАЗОВЬЯ И СТ. КРИВЯНСКАЯ</span>
+                                <span>ФЕРМА ДОНСКОЙ САД</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Part 6B: COMMERCIAL PROPOSAL FOR NEW FARMERS ("Ждём новых фермеров! Присоединяйтесь к нам") -->
+                    <div id="b2b-farmer-offer" class="bg-sun-cream rounded-[36px] p-7 sm:p-12 shadow-2xl border-2 border-sun-main">
+                        <div class="grid lg:grid-cols-12 gap-8 items-center">
+                            <div class="lg:col-span-7 space-y-4">
+                                <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-sun-main text-soil-humus font-display font-bold text-xs">
+                                    🤝 Коммерческое предложение B2B (Уровень 1 платформы)
+                                </div>
+                                <h3 class="font-serif font-bold text-3xl sm:text-4xl text-soil-humus">
+                                    Ждём новых фермеров! Присоединяйтесь к платформе С.П.Е.Л.О.
+                                </h3>
+                                <p class="text-xs sm:text-sm text-stone-700 leading-relaxed">
+                                    Вы выращиваете вкусные овощи, фрукты, ягоды или зелень в Ростовской области, но торговые сети возвращают партии из-за нестандартного калибра или у вас остаются сезонные излишки? Подключите ваше хозяйство к Единому ядру С.П.Е.Л.О.:
+                                </p>
+
+                                <div class="grid sm:grid-cols-2 gap-3.5 pt-2">
+                                    <div class="p-4 rounded-2xl bg-white border border-stone-200">
+                                        <span class="font-display font-bold text-sm text-grass-deep block">✓ Выкуп до 100% нестандарта</span>
+                                        <span class="text-xs text-stone-600 mt-1 block">Берём крупные, мелкие и извилистые плоды, главное — свежесть и вкус.</span>
+                                    </div>
+                                    <div class="p-4 rounded-2xl bg-white border border-stone-200">
+                                        <span class="font-display font-bold text-sm text-grass-deep block">✓ Оплата в день отгрузки</span>
+                                        <span class="text-xs text-stone-600 mt-1 block">Никаких отсрочек на 60 дней, ретро-бонусов и штрафов за упаковку.</span>
+                                    </div>
+                                    <div class="p-4 rounded-2xl bg-white border border-stone-200">
+                                        <span class="font-display font-bold text-sm text-grass-deep block">✓ Вывоз нашим транспортом</span>
+                                        <span class="text-xs text-stone-600 mt-1 block">Забираем урожай прямо с поля или склада в оборотной таре.</span>
+                                    </div>
+                                    <div class="p-4 rounded-2xl bg-white border border-stone-200">
+                                        <span class="font-display font-bold text-sm text-grass-deep block">✓ Прогноз спроса из Ядра</span>
+                                        <span class="text-xs text-stone-600 mt-1 block">Вы заранее видите объём предзаказов по подпискам на неделю вперёд.</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Farmer B2B Application Form -->
+                            <div class="lg:col-span-5 bg-white rounded-3xl p-6 sm:p-7 shadow-lg border border-stone-200">
+                                <h4 class="font-display font-bold text-base text-soil-humus mb-1">Заявка для фермеров и КФХ</h4>
+                                <p class="text-xs text-stone-500 mb-4">Предложите объём урожая — наш агро-закупщик свяжется за 2 часа</p>
+                                <div class="space-y-3">
+                                    <input id="b2b-farm-name" type="text" placeholder="Название хозяйства / Имя фермера" class="w-full px-3.5 py-2.5 rounded-xl bg-stone-100 border border-stone-200 text-xs font-medium">
+                                    <input id="b2b-farm-crop" type="text" placeholder="Культура и объём (напр. Томаты 600 кг, Яблоки 1.2 т)" class="w-full px-3.5 py-2.5 rounded-xl bg-stone-100 border border-stone-200 text-xs font-medium">
+                                    <input id="b2b-farm-phone" type="tel" placeholder="Телефон для связи (+7 928 ...)" class="w-full px-3.5 py-2.5 rounded-xl bg-stone-100 border border-stone-200 text-xs font-medium">
+                                    <button type="button" onclick="submitFarmerOffer()" class="w-full py-3.5 rounded-xl bg-grass-main hover:bg-grass-deep text-white font-display font-bold text-xs shadow-md transition">
+                                        Отправить предложение в Ядро С.П.Е.Л.О.
+                                    </button>
+                                    <p id="b2b-farm-feedback" class="hidden text-[11px] font-semibold text-grass-deep bg-grass-main/10 p-2.5 rounded-xl text-center">
+                                        ✓ Предложение передано на Уровень 1 (Фермеры и поставщики)!
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             ZONE 3: SOIL & ROOTS (#3E2723 -> #241511 -> #160C09)
+             7. "НЕОБЫЧНЫЙ ВАРИАНТ НА ЛЮБОЙ СЛУЧАЙ" (4 Recipes)
+             8. "РАСТУЩЕЕ СООБЩЕСТВО" (Plowed Field Framed Banner)
+             9. 4-LEVEL PLATFORM ARCHITECTURE SCHEMA (From Page 1 of Doc)
+             10. 3 PILLARS + FULL DARK SOIL FOOTER
+             ===================================================================== -->
+        <section id="sec-recipes" class="py-16 sm:py-24 px-4 sm:px-8 relative overflow-hidden">
+            <div class="texture-overlay texture-soil-deep absolute inset-0"></div>
+
+            <div class="max-w-7xl mx-auto relative z-10 space-y-20">
+
+                <!-- 7. "НЕОБЫЧНЫЙ ВАРИАНТ НА ЛЮБОЙ СЛУЧАЙ" (Recipes Grid from Screenshot) -->
+                <div class="bg-[#FBF0DF] rounded-[36px] p-7 sm:p-12 shadow-2xl">
+                    <div class="text-center max-w-2xl mx-auto mb-10">
+                        <h2 class="font-serif font-bold text-3xl sm:text-5xl text-soil-humus">
+                            Необычный вариант на любой случай
+                        </h2>
+                        <p class="text-xs sm:text-sm text-stone-700 mt-3">
+                            Нестандартные рецепты, которые помогут вам питаться правильно, делать добрые дела и меньше выбрасывать продуктов.
+                        </p>
+                    </div>
+
+                    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <!-- Recipe 1 -->
+                        <div class="group cursor-pointer" onclick="openRecipeModal('Простой пудинг из семян чиа с киви', '15 минут', 'Спелые киви (3 шт.), семена чиа (3 ст. л.), молоко или растительный напиток (200 мл), ложка донского мёда.')">
+                            <div class="h-56 rounded-2xl bg-[#E5DEC9] overflow-hidden mb-3 border border-stone-300 relative flex items-center justify-center">
+                                <svg class="w-44 h-44 group-hover:scale-105 transition" viewBox="0 0 180 180">
+                                    <circle cx="90" cy="95" r="68" fill="#D7CCC8" stroke="#8D6E63" stroke-width="4"/>
+                                    <circle cx="90" cy="95" r="56" fill="#EFEBE9"/>
+                                    <!-- Kiwi slices -->
+                                    <circle cx="72" cy="78" r="14" fill="#689F38"/>
+                                    <circle cx="108" cy="74" r="14" fill="#689F38"/>
+                                    <circle cx="68" cy="110" r="14" fill="#689F38"/>
+                                    <circle cx="105" cy="112" r="14" fill="#689F38"/>
+                                    <circle cx="90" cy="95" r="12" fill="#8BC34A"/>
+                                </svg>
+                                <span class="absolute bottom-2 right-2 bg-white/90 text-soil-humus text-[10px] font-bold px-2 py-0.5 rounded">15 мин</span>
+                            </div>
+                            <h3 class="font-bold text-sm text-soil-humus group-hover:text-sun-deep transition">
+                                Простой пудинг из семян чиа с киви
+                            </h3>
+                        </div>
+
+                        <!-- Recipe 2 -->
+                        <div class="group cursor-pointer" onclick="openRecipeModal('Запеченные груши с корицей и орехами', '25 минут', 'Садовые груши с веснушками (4 шт.), корица, грецкие орехи, густая фермерская сметана или йогурт.')">
+                            <div class="h-56 rounded-2xl bg-[#E8D8C3] overflow-hidden mb-3 border border-stone-300 relative flex items-center justify-center">
+                                <svg class="w-44 h-44 group-hover:scale-105 transition" viewBox="0 0 180 180">
+                                    <circle cx="90" cy="95" r="68" fill="#F5F5F5" stroke="#BDBDBD" stroke-width="4"/>
+                                    <ellipse cx="75" cy="98" rx="22" ry="34" fill="#C67100"/>
+                                    <ellipse cx="108" cy="98" rx="22" ry="34" fill="#D68111"/>
+                                    <circle cx="92" cy="96" r="20" fill="#FFFDF7"/>
+                                </svg>
+                                <span class="absolute bottom-2 right-2 bg-white/90 text-soil-humus text-[10px] font-bold px-2 py-0.5 rounded">25 мин</span>
+                            </div>
+                            <h3 class="font-bold text-sm text-soil-humus group-hover:text-sun-deep transition">
+                                Запеченные груши с корицей
+                            </h3>
+                        </div>
+
+                        <!-- Recipe 3 -->
+                        <div class="group cursor-pointer" onclick="openRecipeModal('Запеканка из каштановых грибов с картофельным пюре', '40 минут', 'Фермерские шампиньоны (400 г), мелкий беби-картофель (800 г), морковь (200 г), свежая петрушка и чеснок.')">
+                            <div class="h-56 rounded-2xl bg-[#D7C4B0] overflow-hidden mb-3 border border-stone-300 relative flex items-center justify-center">
+                                <svg class="w-44 h-44 group-hover:scale-105 transition" viewBox="0 0 180 180">
+                                    <circle cx="90" cy="95" r="68" fill="#FFFDF7" stroke="#D7CCC8" stroke-width="4"/>
+                                    <path d="M40,95 A50,50 0 1,1 140,95 Z" fill="#FFF59D"/>
+                                    <path d="M40,95 A50,50 0 1,0 140,95 Z" fill="#5D4037"/>
+                                    <circle cx="80" cy="115" r="6" fill="#FF7043"/>
+                                    <circle cx="105" cy="118" r="6" fill="#FF7043"/>
+                                    <circle cx="92" cy="98" r="5" fill="#409300"/>
+                                </svg>
+                                <span class="absolute bottom-2 right-2 bg-white/90 text-soil-humus text-[10px] font-bold px-2 py-0.5 rounded">40 мин</span>
+                            </div>
+                            <h3 class="font-bold text-sm text-soil-humus group-hover:text-sun-deep transition">
+                                Запеканка из каштановых грибов с картофельным пюре
+                            </h3>
+                        </div>
+
+                        <!-- Recipe 4 -->
+                        <div class="group cursor-pointer" onclick="openRecipeModal('Лепешки-оладьи из лука-порея и кабачков', '20 минут', 'Изогнутые молодые кабачки (2 шт.), лук-порей или зеленый лук, 2 яйца, зелень Дона и ложка муки.')">
+                            <div class="h-56 rounded-2xl bg-[#CDB8A2] overflow-hidden mb-3 border border-stone-300 relative flex items-center justify-center">
+                                <svg class="w-44 h-44 group-hover:scale-105 transition" viewBox="0 0 180 180">
+                                    <ellipse cx="90" cy="95" rx="58" ry="68" fill="#F5F5F5" stroke="#BCAAA4" stroke-width="4"/>
+                                    <circle cx="76" cy="72" r="20" fill="#E68A00"/>
+                                    <circle cx="106" cy="82" r="20" fill="#D87A00"/>
+                                    <circle cx="78" cy="112" r="20" fill="#E68A00"/>
+                                    <circle cx="106" cy="116" r="18" fill="#C66900"/>
+                                </svg>
+                                <span class="absolute bottom-2 right-2 bg-white/90 text-soil-humus text-[10px] font-bold px-2 py-0.5 rounded">20 мин</span>
+                            </div>
+                            <h3 class="font-bold text-sm text-soil-humus group-hover:text-sun-deep transition">
+                                Лепешки из лука-порея и кабачков от Линн
+                            </h3>
+                        </div>
+                    </div>
+
+                    <div class="mt-10 text-center">
+                        <button onclick="startSubscriptionFlow()" class="px-7 py-3.5 rounded-xl bg-[#FFA500] hover:bg-[#E68A00] text-soil-humus font-display font-bold text-xs shadow-md transition">
+                            Посмотрите все рецепты и соберите коробку
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 8. "РАСТУЩЕЕ СООБЩЕСТВО" (Plowed Field Texture + White Frame Banner from Screenshot) -->
+                <div class="texture-plowed-field rounded-[36px] p-6 sm:p-14 shadow-2xl relative overflow-hidden">
+                    <!-- White Border Frame inside Plowed Field -->
+                    <div class="border-4 border-white p-8 sm:p-14 text-center max-w-5xl mx-auto relative z-10 bg-black/20 backdrop-blur-[2px]">
+                        <h2 class="font-serif font-bold text-3xl sm:text-6xl text-white mb-4">
+                            Растущее сообщество.
+                        </h2>
+                        <p class="text-sm sm:text-lg text-amber-100 font-semibold mb-4">
+                            На данный момент спасено более <strong>68 000 кг</strong> фруктов и овощей — и это число продолжает расти.
+                        </p>
+                        <p class="text-xs sm:text-sm text-white/90 max-w-3xl mx-auto leading-relaxed mb-8">
+                            С момента запуска инициативы <strong>С.П.Е.Л.О. (Спасаем Полезную Еду Локальных Огородов)</strong> мы помогаем производителям находить дом для своих несовершенных груш, крупных томатов и извилистой моркови. Мы также боремся с отходами через наш раздел «Рынок», спасая крафтовые продукты в возвратной таре.
+                        </p>
+                        <button onclick="startSubscriptionFlow()" class="px-8 py-3.5 rounded-xl bg-white hover:bg-sun-cream text-soil-humus font-display font-bold text-xs sm:text-sm shadow-lg transition">
+                            Присоединяйтесь к нам
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 9. FULL 4-LEVEL PLATFORM SCHEMA (From Page 1 of Doc: "1. Полная схема платформы") -->
+                <div class="bg-[#0F0E0D] rounded-[36px] p-6 sm:p-12 border border-white/15 shadow-2xl">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                        <div>
+                            <span class="text-xs font-display font-bold uppercase tracking-wider text-sun-main">Архитектура проекта С.П.Е.Л.О.</span>
+                            <h2 class="font-display font-extrabold text-2xl sm:text-3xl text-white mt-1">
+                                Полная схема работы платформы
+                            </h2>
+                        </div>
+                        <button onclick="switchAppView('orders')" class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-sun-gold font-display font-bold text-xs transition self-start sm:self-auto">
+                            Открыть живой реестр заказов →
+                        </button>
+                    </div>
+
+                    <div class="space-y-3 max-w-4xl mx-auto">
+                        <!-- Level 1 -->
+                        <div class="rounded-2xl bg-[#EBF5EB] p-5 sm:p-6 text-center text-soil-humus shadow">
+                            <div class="text-xl mb-1">🌱</div>
+                            <h3 class="font-display font-bold text-base sm:text-lg">Уровень 1. Фермеры и поставщики</h3>
+                            <p class="text-xs sm:text-sm text-stone-700 mt-1 font-medium">
+                                Ассортимент · объёмы · цены · даты поставки · характеристики продукции
+                            </p>
+                        </div>
+
+                        <!-- Connector 1 -> 2 -->
+                        <div class="text-center py-1 text-stone-400 text-xs font-medium">
+                            <span class="text-base block text-white">⇅</span>
+                            Предложения и подтверждения поставок
+                        </div>
+
+                        <!-- Level 2 -->
+                        <div class="rounded-2xl bg-[#EEF2FA] p-5 sm:p-6 text-center text-soil-humus shadow">
+                            <div class="text-xl mb-1">🗄️</div>
+                            <h3 class="font-display font-bold text-base sm:text-lg">Уровень 2. Единое ядро платформы</h3>
+                            <p class="text-xs sm:text-sm text-stone-700 mt-1 font-medium">
+                                Каталог · база фермеров · учёт доступных объёмов · заказы · подписки · резервы · расчёт закупок
+                            </p>
+                        </div>
+
+                        <!-- Connector 2 -> 3 -->
+                        <div class="text-center py-1 text-stone-400 text-xs font-medium">
+                            <span class="text-base block text-white">⇅</span>
+                            Сопоставление спроса с доступным предложением
+                        </div>
+
+                        <!-- Level 3 -->
+                        <div class="rounded-2xl bg-[#FDF2DF] p-5 sm:p-6 text-center text-soil-humus shadow">
+                            <div class="text-xl mb-1">👥</div>
+                            <h3 class="font-display font-bold text-base sm:text-lg">Уровень 3. Покупатели B2C</h3>
+                            <p class="text-xs sm:text-sm text-stone-700 mt-1 font-medium">
+                                Выбор коробки · подписка · разовый заказ · предпочтения · пропуск поставки · оплата
+                            </p>
+                        </div>
+
+                        <!-- Level 4 -->
+                        <div class="rounded-2xl bg-[#1A1615] border border-white/10 p-6 text-center text-white mt-4">
+                            <div class="text-xl mb-1">📦</div>
+                            <h3 class="font-display font-bold text-base sm:text-lg">Уровень 4. Исполнение заказа</h3>
+                            <p class="text-xs sm:text-sm text-stone-300 mt-1 font-medium">
+                                Закупка · приёмка · проверка качества · комплектация · доставка · обратная связь
+                            </p>
+                            <div class="mt-3 pt-3 border-t border-white/10 text-xs text-grass-lime font-semibold">
+                                ↑ Данные возвращаются в платформу и улучшают планирование следующих поставок
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 10. THREE VALUE PILLARS IN DEEP BROWN SOIL (From Screenshot 6) -->
+                <div class="pt-6 pb-10 border-b border-white/15">
+                    <div class="grid md:grid-cols-3 gap-10 text-center text-sun-cream">
+                        <!-- Pillar 1 -->
+                        <div class="px-4 md:border-r border-dashed border-white/25">
+                            <svg class="w-20 h-20 mx-auto mb-5" viewBox="0 0 100 100" fill="none">
+                                <path d="M50,12 C35,28 25,35 20,38 C32,40 42,36 45,34 L44,52 C30,56 22,60 16,62 C28,65 40,60 44,58 L42,88 L58,88 L56,58 C60,60 72,65 84,62 C78,60 70,56 56,52 L55,34 C58,36 68,40 80,38 C75,35 65,28 50,12 Z" fill="#FFA500"/>
+                            </svg>
+                            <h3 class="font-serif font-bold text-2xl mb-3">Борьба с отходами</h3>
+                            <p class="text-xs text-amber-100/80 leading-relaxed">
+                                Ежегодно выбрасываются миллионы тонн продуктов питания, что наносит удар по экологии и труду фермеров. Мы возвращаем спасение урожая в привычку каждой семьи.
+                            </p>
+                        </div>
+
+                        <!-- Pillar 2 -->
+                        <div class="px-4 md:border-r border-dashed border-white/25">
+                            <svg class="w-20 h-20 mx-auto mb-5" viewBox="0 0 100 100" fill="none">
+                                <path d="M62,14 L62,38 M68,14 L68,38 M74,14 L74,38 M62,38 C62,45 74,45 74,38 M68,42 L68,86" stroke="#FFA500" stroke-width="5" stroke-linecap="round"/>
+                                <path d="M35,62 C35,48 52,45 68,48 C75,52 75,68 65,72 C52,74 42,76 35,62 Z" fill="#FFA500"/>
+                            </svg>
+                            <h3 class="font-serif font-bold text-2xl mb-3">Отпразднуйте вкус</h3>
+                            <p class="text-xs text-amber-100/80 leading-relaxed">
+                                Готовка должна быть творческой, яркой и радостной. Каждую неделю мы предлагаем новые рецепты, воспевающие свежие и сезонные продукты во всех их проявлениях.
+                            </p>
+                        </div>
+
+                        <!-- Pillar 3 -->
+                        <div class="px-4">
+                            <svg class="w-20 h-20 mx-auto mb-5" viewBox="0 0 100 100" fill="none">
+                                <path d="M25,45 L25,28 L72,28" stroke="#FFA500" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+                                <polygon points="68,16 84,28 68,40" fill="#FFA500"/>
+                                <path d="M75,55 L75,72 L28,72" stroke="#FFA500" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+                                <polygon points="32,60 16,72 32,84" fill="#FFA500"/>
+                            </svg>
+                            <h3 class="font-serif font-bold text-2xl mb-3">Сделать еду справедливой</h3>
+                            <p class="text-xs text-amber-100/80 leading-relaxed">
+                                Никаких «косметических» правил отбраковки. Никакой бессмысленной пластиковой упаковки. И честные, справедливые цены для локальных производителей — всегда.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FOOTER -->
+                <footer class="pt-4 pb-12 text-sun-cream">
+                    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+                        <div>
+                            <h4 class="font-serif font-bold text-2xl mb-4">Ссылки</h4>
+                            <ul class="space-y-2 text-xs text-amber-100/80">
+                                <li><a href="#sec-boxes-types" class="hover:text-sun-main">Наши коробки</a></li>
+                                <li><a href="#sec-rescued-weekly" class="hover:text-sun-main">Что мы спасаем на этой неделе</a></li>
+                                <li><a href="#sec-producers-b2b" class="hover:text-sun-main">Стать поставщиком (Фермерам)</a></li>
+                                <li><button onclick="switchAppView('cabinet')" class="hover:text-sun-main">Личный кабинет подписчика</button></li>
+                                <li><button onclick="switchAppView('orders')" class="hover:text-sun-main">Страница заказов и Ядро</button></li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4 class="font-serif font-bold text-2xl mb-4">Подписывайтесь на нас</h4>
+                            <button onclick="startSubscriptionFlow()" class="px-5 py-2.5 rounded-lg bg-[#FFA500] text-soil-humus font-display font-bold text-xs mb-4">
+                                Информационный бюллетень
+                            </button>
+                            <ul class="space-y-1.5 text-xs text-amber-100/80">
+                                <li>Telegram-канал С.П.Е.Л.О.</li>
+                                <li>ВКонтакте</li>
+                                <li>Дзен Рецепты без отходов</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4 class="font-serif font-bold text-2xl mb-4">Свяжитесь с нами</h4>
+                            <button onclick="switchAppView('checkout'); goToCheckoutStep(5);" class="px-5 py-2.5 rounded-lg bg-[#FFA500] text-soil-humus font-display font-bold text-xs mb-3">
+                                Помощь и горячая линия
+                            </button>
+                            <p class="text-xs text-amber-100/80">Горячая линия заказа: <strong>8 (800) 555-35-80</strong></p>
+                            <p class="text-xs text-amber-100/60 mt-1">г. Ростов-на-Дону, локальный хаб свежести</p>
+                        </div>
+
+                        <div class="flex flex-col items-start lg:items-end justify-between">
+                            <svg class="h-14 w-auto rounded-sm shadow-lg" viewBox="0 0 540 165">
+                                <use href="#spelo-official-logo"></use>
+                            </svg>
+                            <div class="text-left lg:text-right mt-4">
+                                <span class="inline-block px-3 py-1 rounded border border-white/30 text-[11px] font-bold">
+                                    Серт. Эко-Стандарт Дона • 2026
+                                </span>
+                                <p class="text-[11px] text-amber-100/60 mt-2">
+                                    С.П.Е.Л.О. — Спасаем Полезную Еду Локальных Огородов
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+
+            </div>
+        </section>
+
+    </div>
+
+    <!-- =========================================================================
+         VIEW 2: 5-STEP ODDBOX CHECKOUT FUNNEL (ALL BUY BUTTONS LEAD HERE)
+         Steps: (1) Проверка адреса -> (2) Выберите коробку -> (3) Счёт -> (4) Доставка -> (5) Оплата (ПОЗВОНИТЕ ПО НОМЕРУ)
+         ========================================================================= -->
+    <div id="app-view-checkout" class="hidden min-h-screen bg-[#F5F4F0] pb-20">
+
+        <!-- Checkout Top Stepper Header (Exact Match to Oddbox Funnel Screenshots) -->
+        <div class="bg-white border-b border-stone-200 py-4 px-4 sm:px-8 sticky top-[98px] z-30">
+            <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+                <button onclick="switchAppView('landing')" class="text-xs font-bold text-stone-500 hover:text-soil-humus flex items-center gap-1">
+                    ← Вернуться на лендинг
+                </button>
+
+                <!-- 5 Steps Indicator -->
+                <div class="flex flex-wrap items-center gap-3 sm:gap-6 text-xs font-semibold">
+                    <button onclick="goToCheckoutStep(1)" id="step-pill-1" class="flex items-center gap-1.5 text-soil-humus font-bold">
+                        <span id="step-badge-1" class="w-6 h-6 rounded-full bg-soil-humus text-white flex items-center justify-center text-[11px]">1</span>
+                        <span>Проверка адреса</span>
+                    </button>
+                    <button onclick="goToCheckoutStep(2)" id="step-pill-2" class="flex items-center gap-1.5 text-stone-400">
+                        <span id="step-badge-2" class="w-6 h-6 rounded-full border border-stone-300 flex items-center justify-center text-[11px]">2</span>
+                        <span>Выберите коробку</span>
+                    </button>
+                    <button onclick="goToCheckoutStep(3)" id="step-pill-3" class="flex items-center gap-1.5 text-stone-400">
+                        <span id="step-badge-3" class="w-6 h-6 rounded-full border border-stone-300 flex items-center justify-center text-[11px]">3</span>
+                        <span>Счёт</span>
+                    </button>
+                    <button onclick="goToCheckoutStep(4)" id="step-pill-4" class="flex items-center gap-1.5 text-stone-400">
+                        <span id="step-badge-4" class="w-6 h-6 rounded-full border border-stone-300 flex items-center justify-center text-[11px]">4</span>
+                        <span>Доставка</span>
+                    </button>
+                    <button onclick="goToCheckoutStep(5)" id="step-pill-5" class="flex items-center gap-1.5 text-stone-400">
+                        <span id="step-badge-5" class="w-6 h-6 rounded-full border border-stone-300 flex items-center justify-center text-[11px]">5</span>
+                        <span>Оплата</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-6xl mx-auto px-4 sm:px-8 pt-8">
+
+            <!-- STEP 1: ПРОВЕРКА АДРЕСА (Matches Screenshot: "Куда бы вы хотели, чтобы ваши коробки были доставлены?") -->
+            <div id="checkout-step-1" class="max-w-3xl mx-auto bg-white rounded-3xl p-6 sm:p-10 shadow-xl border border-stone-200">
+                <!-- Banner Image of SPELO Box at Doorstep -->
+                <div class="rounded-2xl overflow-hidden bg-[#2D3748] h-48 sm:h-56 mb-7 flex items-end justify-center relative">
+                    <svg class="w-full h-full" viewBox="0 0 600 220" fill="none">
+                        <rect width="600" height="170" fill="#374151"/>
+                        <rect x="130" y="0" width="340" height="170" fill="#A3C6B1"/>
+                        <rect x="0" y="170" width="600" height="50" fill="#B85D3B"/>
+                        <rect x="215" y="75" width="170" height="98" rx="6" fill="#D7B384" stroke="#8D6E63" stroke-width="3"/>
+                        <use href="#spelo-box-stamp" x="235" y="98" width="130" height="45"/>
+                    </svg>
+                </div>
+
+                <h2 class="font-serif font-bold text-2xl sm:text-4xl text-soil-humus mb-2">
+                    Куда бы вы хотели, чтобы ваши коробки были доставлены?
+                </h2>
+                <p class="text-xs sm:text-sm text-stone-600 mb-6">
+                    Сроки доставки варьируются в зависимости от района и индекса, чтобы спланировать экологичные маршруты и снизить выбросы углекислого газа.
+                </p>
+
+                <label class="block text-xs font-bold text-soil-humus mb-2">Введите свой адрес</label>
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <input id="funnel-address-input" type="text" value="344002, Ростов-на-Дону, ул. Большая Садовая, 58, кв. 12" placeholder="Начните вводить свой адрес или почтовый индекс..." class="flex-1 px-4 py-3.5 rounded-xl border border-stone-300 text-sm font-medium focus:outline-none focus:border-sun-main">
+                    <button onclick="goToCheckoutStep(2)" class="px-7 py-3.5 rounded-xl bg-[#FFA500] hover:bg-[#E68A00] text-soil-humus font-display font-bold text-xs sm:text-sm shadow transition whitespace-nowrap">
+                        Проверьте адрес →
+                    </button>
+                </div>
+                <p class="text-[11px] text-stone-500 mt-2">
+                    Неверный номер здания или квартиры? Не проблема, исправьте его на этапе «Доставка».
+                </p>
+
+                <div class="mt-6 pt-5 border-t border-stone-200 flex flex-wrap items-center justify-between gap-4 text-xs">
+                    <span>У вас уже есть аккаунт? <button onclick="switchAppView('cabinet')" class="underline font-bold text-soil-humus">Войти</button></span>
+                    <div class="flex items-center gap-2">
+                        <span class="font-bold">Отлично</span>
+                        <span class="bg-[#00B67A] text-white px-2 py-0.5 rounded text-xs font-bold">★★★★★</span>
+                        <span class="text-stone-500">2 140 отзывов</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 2: ВЫБЕРИТЕ СВОЙ ВАРИАНТ (Matches 2-Column Oddbox Configurator + Recipes & Reviews Left) -->
+            <div id="checkout-step-2" class="hidden grid lg:grid-cols-12 gap-8 items-start">
+                <!-- Left 7 Columns: Visual Gallery + Zero-Waste Recipes + Customer Reviews -->
+                <div class="lg:col-span-7 space-y-8">
+                    <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-md border border-stone-200">
+                        <h2 class="font-serif font-bold text-3xl sm:text-4xl text-soil-humus mb-2">
+                            Выберите свой вариант
+                        </h2>
+                        <p class="text-xs sm:text-sm text-stone-600 leading-relaxed mb-6">
+                            Мы доставляем заказы в ваш район по <u class="font-bold text-soil-humus">четвергам и воскресеньям</u>. Наши коробки наполнены вкусными продуктами, которые были спасены от списания, включая те, которые считаются «слишком необычными» или «слишком крупными».
+                        </p>
+
+                        <!-- Gallery Grid (3 Thumbnails on Left + Main Box Preview on Right) -->
+                        <div class="grid sm:grid-cols-12 gap-4 items-stretch">
+                            <div class="sm:col-span-3 flex sm:flex-col gap-3">
+                                <div class="flex-1 rounded-2xl bg-amber-100 border border-amber-300 p-2 flex items-center justify-center text-center text-xs font-bold text-soil-humus">
+                                    🍅🥕<br>Свежий сбор
+                                </div>
+                                <div class="flex-1 rounded-2xl bg-emerald-100 border border-emerald-300 p-2 flex items-center justify-center text-center text-xs font-bold text-grass-deep">
+                                    👨‍🌾<br>Фермеры Дона
+                                </div>
+                                <div class="flex-1 rounded-2xl bg-stone-100 border border-stone-300 p-2 flex items-center justify-center text-center text-xs font-bold text-stone-700">
+                                    🥧<br>Рецепты внутри
+                                </div>
+                            </div>
+                            <div class="sm:col-span-9 rounded-2xl bg-[#EAE0C8] p-6 flex flex-col justify-between relative min-h-[270px]">
+                                <div class="inline-flex items-center gap-2 bg-white px-3 py-1 rounded-lg shadow-sm self-start text-xs font-bold">
+                                    <span>Отлично</span>
+                                    <span class="text-[#00B67A]">★★★★★</span>
+                                    <span class="text-stone-500">С.П.Е.Л.О.</span>
+                                </div>
+
+                                <svg class="w-full h-44 my-2" viewBox="0 0 320 170" fill="none">
+                                    <circle cx="115" cy="48" r="24" fill="#FFF9C4"/>
+                                    <circle cx="160" cy="44" r="26" fill="#2E6B00"/>
+                                    <circle cx="205" cy="50" r="22" fill="#FF7043"/>
+                                    <rect x="65" y="58" width="190" height="95" rx="6" fill="#D7B384" stroke="#9C7343" stroke-width="3"/>
+                                    <use href="#spelo-box-stamp" x="95" y="80" width="130" height="45"/>
+                                </svg>
+
+                                <p id="step2-visual-caption" class="text-xs font-semibold text-soil-humus">
+                                    Средний набор фруктов и овощей — Каждая неделя отличается от предыдущей.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sub-block from Screenshot: "Ознакомьтесь с сотнями вкусных рецептов с минимальным количеством отходов" -->
+                    <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-md border border-stone-200">
+                        <h3 class="font-serif font-bold text-2xl sm:text-3xl text-soil-humus mb-6">
+                            Ознакомьтесь с сотнями вкусных рецептов с минимальным количеством отходов.
+                        </h3>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                            <div>
+                                <div class="h-28 rounded-xl bg-amber-100 flex items-center justify-center text-3xl mb-2">🎃🧀</div>
+                                <p class="text-xs font-bold text-soil-humus leading-snug">Лазанья с тыквой</p>
+                                <span class="inline-block mt-1 px-2 py-0.5 rounded bg-stone-100 text-[10px] font-bold text-stone-600">60 минут</span>
+                            </div>
+                            <div>
+                                <div class="h-28 rounded-xl bg-emerald-100 flex items-center justify-center text-3xl mb-2">🥦🍳</div>
+                                <p class="text-xs font-bold text-soil-humus leading-snug">Фиолетовая брокколи Huevos Rancheros</p>
+                                <span class="inline-block mt-1 px-2 py-0.5 rounded bg-stone-100 text-[10px] font-bold text-stone-600">30 минут</span>
+                            </div>
+                            <div>
+                                <div class="h-28 rounded-xl bg-orange-100 flex items-center justify-center text-3xl mb-2">🍲🥒</div>
+                                <p class="text-xs font-bold text-soil-humus leading-snug">Тажин из кабачков и кускуса в мультиварке</p>
+                                <span class="inline-block mt-1 px-2 py-0.5 rounded bg-stone-100 text-[10px] font-bold text-stone-600">40 минут</span>
+                            </div>
+                            <div>
+                                <div class="h-28 rounded-xl bg-lime-100 flex items-center justify-center text-3xl mb-2">🌿🍝</div>
+                                <p class="text-xs font-bold text-soil-humus leading-snug">Соус для пасты со шпинатом</p>
+                                <span class="inline-block mt-1 px-2 py-0.5 rounded bg-stone-100 text-[10px] font-bold text-stone-600">15 минут</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Customer Reviews Block -->
+                    <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-md border border-stone-200">
+                        <h3 class="font-serif font-bold text-2xl sm:text-3xl text-soil-humus mb-4">
+                            Послушайте отзывы наших довольных пользователей С.П.Е.Л.О.
+                        </h3>
+                        <div class="grid sm:grid-cols-2 gap-4 text-xs">
+                            <div class="p-4 rounded-2xl bg-stone-50 border border-stone-200">
+                                <div class="text-[#00B67A] font-bold mb-1">★★★★★ Елена К., Ростов-на-Дону</div>
+                                <p class="text-stone-700">«Коробка М спасает нас каждую неделю! Помидоры гигантские и сладкие, морковь хрустящая, а экономия за месяц вышла почти 4 000 рублей». </p>
+                            </div>
+                            <div class="p-4 rounded-2xl bg-stone-50 border border-stone-200">
+                                <div class="text-[#00B67A] font-bold mb-1">★★★★★ Артём и Мария, Аксай</div>
+                                <p class="text-stone-700">«Обожаем функцию стоп-листа: убрали кинзу и сельдерей, вместо них приходят шикарные азовские яблоки и груши». </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right 5 Columns: Sticky Oddbox Selector Panel (Exact Pills & Size Circles Л / М / С / XS) -->
+                <div class="lg:col-span-5 bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-stone-200 lg:sticky lg:top-40">
+                    <h3 class="font-display font-bold text-xl text-soil-humus mb-5">Выберите свой вариант</h3>
+
+                    <!-- 1. ВЫБЕРИТЕ, ЧТО ВНУТРИ -->
+                    <div class="mb-6">
+                        <span class="block text-[11px] font-bold uppercase tracking-wider text-stone-500 mb-2.5">ВЫБЕРИТЕ, ЧТО ВНУТРИ</span>
+                        <div class="flex flex-wrap gap-2">
+                            <button type="button" onclick="setFunnelType('mix', 'Фрукты и овощи')" id="f-type-mix" class="px-4 py-2.5 rounded-full border-2 border-soil-humus bg-soil-humus text-white text-xs font-bold transition">
+                                Фрукты и овощи
+                            </button>
+                            <button type="button" onclick="setFunnelType('veg', 'Овощи')" id="f-type-veg" class="px-4 py-2.5 rounded-full border border-stone-300 text-soil-humus hover:border-soil-humus text-xs font-semibold transition">
+                                Овощи
+                            </button>
+                            <button type="button" onclick="setFunnelType('fruit', 'Фрукты')" id="f-type-fruit" class="px-4 py-2.5 rounded-full border border-stone-300 text-soil-humus hover:border-soil-humus text-xs font-semibold transition">
+                                Фрукты
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 2. ВЫБЕРИТЕ РАЗМЕР (Л / М / С / XS) -->
+                    <div class="mb-6">
+                        <span class="block text-[11px] font-bold uppercase tracking-wider text-stone-500 mb-2.5">ВЫБЕРИТЕ РАЗМЕР</span>
+                        <div class="flex items-center gap-3">
+                            <button type="button" onclick="setFunnelSize('L')" id="f-size-L" class="w-12 h-12 rounded-full border border-stone-300 font-bold text-xs text-soil-humus hover:border-soil-humus transition">
+                                Л
+                            </button>
+                            <button type="button" onclick="setFunnelSize('M')" id="f-size-M" class="w-12 h-12 rounded-full border-2 border-soil-humus bg-amber-100 font-extrabold text-xs text-soil-humus transition">
+                                М
+                            </button>
+                            <button type="button" onclick="setFunnelSize('S')" id="f-size-S" class="w-12 h-12 rounded-full border border-stone-300 font-bold text-xs text-soil-humus hover:border-soil-humus transition">
+                                С
+                            </button>
+                            <button type="button" onclick="setFunnelSize('XS')" id="f-size-XS" class="w-12 h-12 rounded-full border border-stone-300 font-bold text-xs text-soil-humus hover:border-soil-humus transition">
+                                XS
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Peach Info Box (Matches Screenshot) -->
+                    <div class="rounded-2xl bg-[#FFF1E0] p-5 space-y-3.5 text-xs mb-6 border border-amber-200">
+                        <div class="flex items-start gap-2.5">
+                            <span class="text-sun-deep font-bold text-base">👥</span>
+                            <div>
+                                <strong id="f-info-people" class="text-soil-humus block">Идеально подходит для 2–3 человек.</strong>
+                                <span id="f-info-varieties" class="text-stone-600">8 видов овощей и 4 вида фруктов, которые мы спасём на этой неделе.</span>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-2.5">
+                            <span class="text-sun-deep font-bold text-base">🌍</span>
+                            <div>
+                                <strong class="text-soil-humus block">Боритесь с пищевыми отходами</strong>
+                                <span id="f-info-weight" class="text-stone-600">Спасите около 6,4 кг свежих фермерских продуктов напрямую от производителей.</span>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-2.5">
+                            <span class="text-sun-deep font-bold text-base">✓</span>
+                            <div>
+                                <strong class="text-soil-humus block">Без обязательств</strong>
+                                <span class="text-stone-600">Вы можете пропустить, изменить или отменить подписку в любое время.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Optional Exclusions (Stop-list) -->
+                    <div class="mb-6">
+                        <span class="block text-[11px] font-bold uppercase tracking-wider text-stone-500 mb-2">ИСКЛЮЧИТЬ НЕЛЮБИМЫЕ ПРОДУКТЫ (СТОП-ЛИСТ):</span>
+                        <div class="flex flex-wrap gap-1.5 text-[11px]">
+                            <button type="button" onclick="toggleFunnelExclude(this, 'Без кинзы')" class="px-2.5 py-1 rounded-lg border border-stone-300 text-stone-700">Без кинзы</button>
+                            <button type="button" onclick="toggleFunnelExclude(this, 'Без лука')" class="px-2.5 py-1 rounded-lg border border-stone-300 text-stone-700">Без лука</button>
+                            <button type="button" onclick="toggleFunnelExclude(this, 'Без сельдерея')" class="px-2.5 py-1 rounded-lg border border-stone-300 text-stone-700">Без сельдерея</button>
+                            <button type="button" onclick="toggleFunnelExclude(this, 'Без свеклы')" class="px-2.5 py-1 rounded-lg border border-stone-300 text-stone-700">Без свеклы</button>
+                        </div>
+                    </div>
+
+                    <!-- Total Price & Continue Button -->
+                    <div class="flex items-baseline justify-between py-3 border-t border-stone-200 mb-4">
+                        <span class="font-bold text-sm text-soil-humus">Итого</span>
+                        <span id="f-step2-price" class="font-display font-black text-2xl text-soil-humus">1 490 ₽</span>
+                    </div>
+
+                    <button type="button" onclick="goToCheckoutStep(3)" class="w-full py-4 rounded-xl bg-[#FFA500] hover:bg-[#E68A00] text-soil-humus font-display font-bold text-sm shadow-lg transition">
+                        Выберите этот пункт →
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 3: СЧЁТ / ДАННЫЕ УЧЁТНОЙ ЗАПИСИ (Matches Screenshot: Account Creation + Order Summary) -->
+            <div id="checkout-step-3" class="hidden grid lg:grid-cols-12 gap-8 items-start">
+                <!-- Left 7 Columns: Account Form -->
+                <div class="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-10 shadow-md border border-stone-200">
+                    <h2 class="font-serif font-bold text-3xl text-soil-humus mb-6">Данные учётной записи</h2>
+
+                    <div class="space-y-5">
+                        <div>
+                            <div class="flex justify-between text-xs mb-1.5">
+                                <label class="font-bold text-soil-humus">Адрес электронной почты</label>
+                                <span class="text-stone-400">Необходимый</span>
+                            </div>
+                            <input id="funnel-email" type="email" value="family@spelo-don.ru" class="w-full px-4 py-3.5 rounded-xl border border-stone-300 text-sm focus:outline-none focus:border-sun-main">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs mb-1.5">
+                                <label class="font-bold text-soil-humus">Создать пароль</label>
+                                <span class="text-stone-400">Необходимый</span>
+                            </div>
+                            <input type="password" value="SpeloHarvest2026!" class="w-full px-4 py-3.5 rounded-xl border border-stone-300 text-sm focus:outline-none focus:border-sun-main">
+                            <p class="text-[11px] text-stone-500 mt-1.5">
+                                Пароль позволит вам управлять коробками, менять стоп-лист и пропускать недели в Личном кабинете.
+                            </p>
+                        </div>
+
+                        <div class="space-y-2 text-xs text-stone-700 pt-2">
+                            <div class="flex items-center gap-2"><span class="text-sun-deep font-bold">✓</span> <strong>Никаких обязательств.</strong> Вы можете пропустить, изменить или отменить подписку в любое время.</div>
+                            <div class="flex items-center gap-2"><span class="text-sun-deep font-bold">🎁</span> <strong>Получайте награды.</strong> Приглашайте друзей и получайте скидки на фермерские боксы.</div>
+                            <div class="flex items-center gap-2"><span class="text-sun-deep font-bold">📖</span> <strong>Необычные рецепты.</strong> Доступ к еженедельным карточкам рецептов от шеф-поваров.</div>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-stone-100 flex items-center gap-3 text-xs text-stone-600">
+                            <input type="checkbox" class="w-4 h-4 accent-sun-main">
+                            <span>Поставьте галочку, если вы не хотите получать от нас эксклюзивные рецепты и списки спасённого урожая недели.</span>
+                        </div>
+
+                        <button type="button" onclick="goToCheckoutStep(4)" class="w-full py-4 rounded-xl bg-[#FFA500] hover:bg-[#E68A00] text-soil-humus font-display font-bold text-sm shadow-lg transition">
+                            Создать мой аккаунт →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right 5 Columns: Order Summary ("Сводка заказа") -->
+                <div class="lg:col-span-5 bg-white rounded-3xl p-6 sm:p-8 shadow-md border border-stone-200">
+                    <h3 class="font-display font-bold text-lg text-soil-humus mb-4">Сводка заказа</h3>
+                    <div class="flex items-center gap-3 pb-4 border-b border-stone-200">
+                        <div class="w-14 h-14 rounded-xl bg-amber-100 flex items-center justify-center text-2xl">📦</div>
+                        <div>
+                            <h4 class="summary-box-title font-bold text-sm text-soil-humus">Коробка с фруктами и овощами</h4>
+                            <span class="summary-box-size text-xs text-stone-500">Размер М (Средний)</span>
+                        </div>
+                    </div>
+                    <div class="py-4 space-y-2 text-xs border-b border-stone-200">
+                        <div class="flex items-center gap-2 text-stone-700"><span>🏠</span> <span class="summary-address-text">344002, Ростов-на-Дону, ул. Большая Садовая, 58</span></div>
+                        <div class="flex items-center gap-2 text-stone-700"><span>↻</span> <span>Еженедельная подписка (можно поставить на паузу)</span></div>
+                    </div>
+                    <div class="py-4 space-y-2 text-xs border-b border-stone-200">
+                        <div class="flex justify-between"><span>Стоимость коробки</span><strong class="summary-price-val">1 490 ₽</strong></div>
+                        <div class="flex justify-between"><span>Эко-доставка по маршруту района</span><strong class="text-grass-deep">0 ₽ (Бесплатно)</strong></div>
+                        <div class="flex justify-between text-sm font-extrabold text-soil-humus pt-2"><span>Общий итог</span><span class="summary-price-val">1 490 ₽</span></div>
+                    </div>
+                    <div class="mt-4 flex gap-2">
+                        <input type="text" value="СПЕЛОСТАРТ" class="flex-1 px-3 py-2 rounded-lg border border-stone-300 text-xs font-mono">
+                        <button type="button" onclick="applyFunnelPromo()" class="px-4 py-2 rounded-lg bg-stone-200 hover:bg-sun-main text-xs font-bold">Применять</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 4: ИНФОРМАЦИЯ О ДОСТАВКЕ (Matches Screenshot: Delivery Date, Name, Safe Place, Phone) -->
+            <div id="checkout-step-4" class="hidden grid lg:grid-cols-12 gap-8 items-start">
+                <div class="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-10 shadow-md border border-stone-200">
+                    <h2 class="font-serif font-bold text-3xl text-soil-humus mb-6">Информация о доставке</h2>
+
+                    <div class="space-y-5">
+                        <div>
+                            <label class="block text-xs font-bold text-soil-humus mb-1">Адрес доставки</label>
+                            <input id="step4-address-confirm" type="text" value="344002, Ростов-на-Дону, ул. Большая Садовая, 58, кв. 12" class="w-full px-4 py-3 rounded-xl border border-stone-300 text-sm">
+                        </div>
+
+                        <!-- Green Delivery Confirmation Notice (Matches Screenshot) -->
+                        <div class="p-4 rounded-2xl bg-[#D7F0C2] border border-[#9CCC65] text-xs text-soil-humus space-y-1">
+                            <div class="font-bold">📅 Отличные новости! Мы доставляем заказы в ваш район по четвергам и воскресеньям.</div>
+                            <div>Время доставки: ночная/утренняя доставка свежего сбора с <strong>19:00 среды до 07:00 четверга</strong>.</div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-soil-humus mb-1">Дата первой поставки</label>
+                            <select id="funnel-delivery-date" class="w-full px-4 py-3 rounded-xl border border-stone-300 text-sm bg-white">
+                                <option value="Четверг, 22 октября">Четверг, 22 октября (Ближайший сбор урожая)</option>
+                                <option value="Воскресенье, 25 октября">Воскресенье, 25 октября</option>
+                                <option value="Четверг, 29 октября">Четверг, 29 октября</option>
+                            </select>
+                        </div>
+
+                        <div class="grid sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-soil-humus mb-1">Имя</label>
+                                <input id="funnel-first-name" type="text" value="Алексей" class="w-full px-4 py-3 rounded-xl border border-stone-300 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-soil-humus mb-1">Фамилия</label>
+                                <input id="funnel-last-name" type="text" value="Донской" class="w-full px-4 py-3 rounded-xl border border-stone-300 text-sm">
+                            </div>
+                        </div>
+
+                        <div class="grid sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-soil-humus mb-1">Ваше безопасное место</label>
+                                <input id="funnel-safe-place" type="text" placeholder="Например, «на крыльце», «у консьержа»" value="У двери на коврике (код подъезда 45#)" class="w-full px-4 py-3 rounded-xl border border-stone-300 text-sm">
+                                <span class="text-[10px] text-stone-500">Курьер оставит коробку и пришлёт фото.</span>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-soil-humus mb-1">Контактный номер</label>
+                                <input id="funnel-phone" type="tel" value="+7 (928) 210-45-90" class="w-full px-4 py-3 rounded-xl border border-stone-300 text-sm">
+                            </div>
+                        </div>
+
+                        <button type="button" onclick="goToCheckoutStep(5)" class="w-full py-4 rounded-xl bg-[#FFA500] hover:bg-[#E68A00] text-soil-humus font-display font-bold text-sm shadow-lg transition">
+                            Продолжать к подтверждению и оплате →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right 5 Columns: Order Summary -->
+                <div class="lg:col-span-5 bg-white rounded-3xl p-6 sm:p-8 shadow-md border border-stone-200">
+                    <h3 class="font-display font-bold text-lg text-soil-humus mb-4">Сводка заказа</h3>
+                    <div class="flex items-center gap-3 pb-4 border-b border-stone-200">
+                        <div class="w-14 h-14 rounded-xl bg-amber-100 flex items-center justify-center text-2xl">📦</div>
+                        <div>
+                            <h4 class="summary-box-title font-bold text-sm text-soil-humus">Коробка с фруктами и овощами</h4>
+                            <span class="summary-box-size text-xs text-stone-500">Размер М (Средний)</span>
+                        </div>
+                    </div>
+                    <div class="py-4 space-y-2 text-xs border-b border-stone-200">
+                        <div class="flex items-center gap-2 text-stone-700"><span>📅</span> <span>Прибытие в четверг, до 07:00 утра</span></div>
+                        <div class="flex items-center gap-2 text-stone-700"><span>🏠</span> <span class="summary-address-text">344002, Ростов-на-Дону, ул. Большая Садовая, 58</span></div>
+                    </div>
+                    <div class="py-4 flex justify-between text-base font-extrabold text-soil-humus">
+                        <span>К оплате</span>
+                        <span class="summary-price-val">1 490 ₽</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 5: ОПЛАТА — СПЕЦИАЛЬНОЕ ТРЕБОВАНИЕ ТЗ ("ПОЗВОНИТЕ ПО НОМЕРУ ТЕЛЕФОНА, МЫ УЖЕ ЗНАЕМ О ВАШЕМ ЗАКАЗЕ!") -->
+            <div id="checkout-step-5" class="hidden max-w-3xl mx-auto">
+                <div class="bg-white rounded-[36px] p-8 sm:p-12 shadow-2xl border-4 border-[#FFA500] text-center space-y-6">
+                    <div class="w-20 h-20 rounded-3xl bg-sun-main/20 text-soil-humus flex items-center justify-center text-4xl mx-auto shadow-inner">
+                        📞
+                    </div>
+
+                    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-grass-main/15 text-grass-deep font-display font-bold text-xs">
+                        ✓ Заказ <span id="step5-order-id">#SP-2049</span> зарегистрирован в Едином ядре С.П.Е.Л.О.!
+                    </div>
+
+                    <h2 class="font-display font-black text-2xl sm:text-4xl text-soil-humus leading-tight">
+                        ПОЗВОНИТЕ ПО НОМЕРУ ТЕЛЕФОНА — МЫ УЖЕ ЗНАЕМ О ВАШЕМ ЗАКАЗЕ!
+                    </h2>
+
+                    <p class="text-sm sm:text-base text-stone-700 max-w-xl mx-auto leading-relaxed">
+                        Ваша коробка, адрес доставки и стоп-лист уже сохранены в системе за вашим номером телефона. Чтобы подтвердить заказ и зафиксировать скидку первой недели, просто позвоните на нашу линию:
+                    </p>
+
+                    <!-- Big Phone Number Callout Box -->
+                    <div class="p-6 sm:p-8 rounded-3xl bg-soil-humus text-sun-cream max-w-xl mx-auto shadow-xl border-2 border-sun-main">
+                        <span class="text-xs font-bold uppercase tracking-widest text-sun-gold block mb-2">Единый номер подтверждения заказа С.П.Е.Л.О.:</span>
+                        <a href="tel:88005553580" class="font-display font-black text-3xl sm:text-5xl text-white hover:text-sun-main transition block">
+                            8 (800) 555-35-80
+                        </a>
+                        <span class="text-xs text-amber-200/80 block mt-2">Звонок бесплатный • Оператор уже видит ваш заказ на экране</span>
+                    </div>
+
+                    <!-- Order Details Recap -->
+                    <div class="bg-stone-100 rounded-2xl p-5 max-w-xl mx-auto text-left text-xs space-y-1.5 border border-stone-200">
+                        <div class="flex justify-between"><span>Состав заказа:</span><strong class="summary-box-title text-soil-humus">Коробка с фруктами и овощами (М)</strong></div>
+                        <div class="flex justify-between"><span>Клиент и телефон:</span><strong id="step5-client-info" class="text-soil-humus">Алексей Донской (+7 928 210-45-90)</strong></div>
+                        <div class="flex justify-between"><span>Адрес и безопасное место:</span><strong id="step5-safe-info" class="text-soil-humus">У двери на коврике</strong></div>
+                        <div class="flex justify-between"><span>Сумма к оплате:</span><strong class="summary-price-val text-grass-deep text-sm">1 490 ₽</strong></div>
+                    </div>
+
+                    <!-- Demo Button for Presentation: Simulate Call & Push to Cabinet + Orders Page -->
+                    <div class="pt-2 flex flex-col sm:flex-row justify-center gap-3">
+                        <button type="button" onclick="confirmOrderViaPhoneCall()" class="px-8 py-4 rounded-2xl bg-grass-main hover:bg-grass-deep text-white font-display font-bold text-xs sm:text-sm shadow-xl transition">
+                            ✓ Имитировать звонок и подтвердить заказ (Демо для жюри)
+                        </button>
+                        <button type="button" onclick="switchAppView('cabinet')" class="px-6 py-4 rounded-2xl bg-stone-200 hover:bg-stone-300 text-soil-humus font-display font-bold text-xs sm:text-sm transition">
+                            Перейти в Личный кабинет →
+                        </button>
+                    </div>
+
+                    <p id="step5-confirmed-banner" class="hidden p-4 rounded-2xl bg-grass-main/15 border border-grass-main text-grass-deep font-bold text-xs sm:text-sm">
+                        🎉 Звонок принят! Заказ подтверждён и передан на Уровень 4 (Закупка и комплектация). Теперь он отображается в Личном кабинете и на Странице заказов!
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- =========================================================================
+         VIEW 3: ЛИЧНЫЙ КАБИНЕТ ПОЛЬЗОВАТЕЛЯ (Requirement #4 from Doc)
+         Shows delivery status tracker, choose/swap new boxes, skip week, stop-list
+         ========================================================================= -->
+    <div id="app-view-cabinet" class="hidden min-h-screen bg-[#F5F4F0] py-10 px-4 sm:px-8">
+        <div class="max-w-7xl mx-auto space-y-8">
+
+            <!-- Top User Profile Welcome Banner -->
+            <div class="bg-soil-humus text-sun-cream rounded-[32px] p-6 sm:p-9 shadow-xl flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 rounded-2xl bg-sun-main text-soil-humus font-display font-black text-2xl flex items-center justify-center">
+                        АД
+                    </div>
+                    <div>
+                        <span class="px-2.5 py-0.5 rounded-full bg-grass-main text-white text-[10px] font-bold uppercase">Активный спасатель С.П.Е.Л.О.</span>
+                        <h1 id="cab-user-name" class="font-display font-bold text-2xl sm:text-3xl text-white mt-1">Алексей Донской</h1>
+                        <p id="cab-user-address" class="text-xs text-amber-200/80">Ростов-на-Дону, ул. Большая Садовая, 58 • Безопасное место: У двери на коврике</p>
+                    </div>
+                </div>
+
+                <!-- Personal Saved Harvest Counter -->
+                <div class="grid grid-cols-3 gap-3 w-full lg:w-auto">
+                    <div class="bg-white/10 rounded-2xl p-3.5 text-center">
+                        <span class="font-display font-extrabold text-xl text-sun-main block">42.5 кг</span>
+                        <span class="text-[11px] text-amber-100/80">Спасено урожая</span>
+                    </div>
+                    <div class="bg-white/10 rounded-2xl p-3.5 text-center">
+                        <span class="font-display font-extrabold text-xl text-grass-lime block">4 850 ₽</span>
+                        <span class="text-[11px] text-amber-100/80">Сэкономлено</span>
+                    </div>
+                    <div class="bg-white/10 rounded-2xl p-3.5 text-center">
+                        <span class="font-display font-extrabold text-xl text-sky-300 block">8 500 л</span>
+                        <span class="text-[11px] text-amber-100/80">Воды сбережено</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Delivery Status Tracker Card -->
+            <div class="bg-white rounded-[32px] p-6 sm:p-9 shadow-md border border-stone-200">
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                    <div>
+                        <span class="text-xs font-bold uppercase text-grass-deep">Текущая поставка недели • Заказ <span id="cab-order-id">#SP-2049</span></span>
+                        <h2 class="font-serif font-bold text-2xl sm:text-3xl text-soil-humus mt-0.5">
+                            Статус доставки вашей коробки
+                        </h2>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs text-stone-500">Демо-переключение этапа для презентации:</span>
+                        <select id="cab-stage-select" onchange="setCabinetDeliveryStage(this.value)" class="px-3 py-2 rounded-xl bg-stone-100 border border-stone-300 text-xs font-bold text-soil-humus">
+                            <option value="1">1. Закупка у фермера</option>
+                            <option value="2">2. Приёмка и проверка качества</option>
+                            <option value="3" selected>3. Комплектация вашего бокса</option>
+                            <option value="4">4. Курьер в пути (ночной маршрут)</option>
+                            <option value="5">5. Доставлено (Фото у двери)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 5-Stage Progress Bar (Level 4 Execution Steps) -->
+                <div class="grid grid-cols-1 sm:grid-cols-5 gap-3 mb-6">
+                    <div id="cab-step-1" class="p-4 rounded-2xl border-2 border-grass-main bg-grass-main/10">
+                        <span class="text-xs font-bold text-grass-deep block">Этап 1 ✓</span>
+                        <strong class="text-sm text-soil-humus block mt-0.5">Закупка урожая</strong>
+                        <span class="text-[11px] text-stone-600">Собрано в КФХ Кривянское и Азовский сад</span>
+                    </div>
+                    <div id="cab-step-2" class="p-4 rounded-2xl border-2 border-grass-main bg-grass-main/10">
+                        <span class="text-xs font-bold text-grass-deep block">Этап 2 ✓</span>
+                        <strong class="text-sm text-soil-humus block mt-0.5">Проверка качества</strong>
+                        <span class="text-[11px] text-stone-600">Свежесть 10/10, калибр нестандартный</span>
+                    </div>
+                    <div id="cab-step-3" class="p-4 rounded-2xl border-2 border-sun-main bg-sun-cream shadow">
+                        <span class="text-xs font-bold text-sun-deep block">Этап 3 • Сейчас</span>
+                        <strong class="text-sm text-soil-humus block mt-0.5">Комплектация</strong>
+                        <span class="text-[11px] text-stone-600">Учтён ваш стоп-лист и обмены недели</span>
+                    </div>
+                    <div id="cab-step-4" class="p-4 rounded-2xl border border-stone-200 bg-stone-50 opacity-75">
+                        <span class="text-xs font-bold text-stone-400 block">Этап 4</span>
+                        <strong class="text-sm text-soil-humus block mt-0.5">Ночная доставка</strong>
+                        <span class="text-[11px] text-stone-500">Четверг с 19:00 до 07:00 утра</span>
+                    </div>
+                    <div id="cab-step-5" class="p-4 rounded-2xl border border-stone-200 bg-stone-50 opacity-75">
+                        <span class="text-xs font-bold text-stone-400 block">Этап 5</span>
+                        <strong class="text-sm text-soil-humus block mt-0.5">Фото у двери</strong>
+                        <span class="text-[11px] text-stone-500">Отчёт о доставке и обратная связь</span>
+                    </div>
+                </div>
+
+                <!-- Delivered Photo Preview (Visible when stage 5 is selected) -->
+                <div id="cab-photo-proof" class="hidden p-5 rounded-2xl bg-emerald-50 border border-emerald-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 rounded-xl bg-soil-humus text-white flex items-center justify-center text-2xl">📸</div>
+                        <div>
+                            <h4 class="font-bold text-sm text-grass-deep">Коробка доставлена в 06:18 утра!</h4>
+                            <p class="text-xs text-stone-600">Оставлена в безопасном месте: «У двери на коврике». Приятного аппетита!</p>
+                        </div>
+                    </div>
+                    <span class="px-3 py-1.5 rounded-lg bg-white text-xs font-bold text-soil-humus border border-stone-200">Фотоотчёт курьера #402</span>
+                </div>
+            </div>
+
+            <!-- Subscription Controls Grid: Manage Box / Swap Items / Skip Delivery -->
+            <div class="grid lg:grid-cols-3 gap-6">
+                <!-- Card 1: Current Box & Switch Box Type -->
+                <div class="bg-white rounded-3xl p-6 shadow-md border border-stone-200 flex flex-col justify-between">
+                    <div>
+                        <span class="text-xs font-bold uppercase text-sun-deep">Моя подписка</span>
+                        <h3 id="cab-current-box-name" class="font-serif font-bold text-2xl text-soil-humus mt-1">Коробка с фруктами и овощами (М)</h3>
+                        <p class="text-xs text-stone-600 mt-1">Еженедельно по четвергам • 1 490 ₽</p>
+
+                        <div class="mt-4 pt-4 border-t border-stone-200">
+                            <label class="block text-xs font-bold text-soil-humus mb-2">Поменять коробку на следующую неделю:</label>
+                            <select id="cab-change-box-select" onchange="changeCabinetBox(this.value)" class="w-full px-3 py-2.5 rounded-xl bg-stone-100 border border-stone-300 text-xs font-semibold">
+                                <option value="Коробка с фруктами и овощами (S) — 1 090 ₽">Фрукты и овощи (Маленький S) — 1 090 ₽</option>
+                                <option value="Коробка с фруктами и овощами (M) — 1 490 ₽" selected>Фрукты и овощи (Средний M) — 1 490 ₽</option>
+                                <option value="Коробка с фруктами и овощами (L) — 2 090 ₽">Фрукты и овощи (Большой L) — 2 090 ₽</option>
+                                <option value="Овощной набор (M) — 1 290 ₽">Овощной набор (Средний M) — 1 290 ₽</option>
+                                <option value="Фруктовый сад (M) — 1 590 ₽">Только фрукты (Средний M) — 1 590 ₽</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button onclick="startSubscriptionFlow()" class="mt-5 w-full py-3 rounded-xl bg-[#FFA500] hover:bg-[#E68A00] text-soil-humus font-display font-bold text-xs transition">
+                        Заказать дополнительную коробку
+                    </button>
+                </div>
+
+                <!-- Card 2: Weekly Swaps & Stop-List -->
+                <div class="bg-white rounded-3xl p-6 shadow-md border border-stone-200 flex flex-col justify-between">
+                    <div>
+                        <span class="text-xs font-bold uppercase text-grass-deep">Обмены этой недели</span>
+                        <h3 class="font-serif font-bold text-2xl text-soil-humus mt-1">Что внутри вашего бокса</h3>
+                        <p class="text-xs text-stone-600 mt-1 mb-3">Нажмите на продукт, если хотите заменить его на яблоко или картофель:</p>
+                        <div class="flex flex-wrap gap-1.5 text-xs">
+                            <button onclick="toggleSwapCabinetItem(this)" class="px-2.5 py-1.5 rounded-lg bg-stone-100 hover:bg-amber-100 font-medium">🍅 Томаты черри (230 г)</button>
+                            <button onclick="toggleSwapCabinetItem(this)" class="px-2.5 py-1.5 rounded-lg bg-stone-100 hover:bg-amber-100 font-medium">🥕 Морковь (630 г)</button>
+                            <button onclick="toggleSwapCabinetItem(this)" class="px-2.5 py-1.5 rounded-lg bg-stone-100 hover:bg-amber-100 font-medium">🥔 Картофель (900 г)</button>
+                            <button onclick="toggleSwapCabinetItem(this)" class="px-2.5 py-1.5 rounded-lg bg-stone-100 hover:bg-amber-100 font-medium">🎃 Тыква Баттернат (2 шт.)</button>
+                            <button onclick="toggleSwapCabinetItem(this)" class="px-2.5 py-1.5 rounded-lg bg-stone-100 hover:bg-amber-100 font-medium">🍐 Груши (540 г)</button>
+                            <button onclick="toggleSwapCabinetItem(this)" class="px-2.5 py-1.5 rounded-lg bg-stone-100 hover:bg-amber-100 font-medium">🍇 Виноград (400 г)</button>
+                        </div>
+                    </div>
+                    <p id="cab-swap-notice" class="mt-4 text-[11px] text-grass-deep font-semibold">
+                        ✓ Все позиции свежие, стоп-лист учтён автоматически.
+                    </p>
+                </div>
+
+                <!-- Card 3: Skip Delivery ("Пропустить коробку") -->
+                <div class="bg-white rounded-3xl p-6 shadow-md border border-stone-200 flex flex-col justify-between">
+                    <div>
+                        <span class="text-xs font-bold uppercase text-stone-500">Управление графиком</span>
+                        <h3 class="font-serif font-bold text-2xl text-soil-humus mt-1">Следите за коробками</h3>
+                        <p class="text-xs text-stone-600 mt-1">
+                            Уезжаете в отпуск или холодильник ещё полон? Пропустите следующую поставку без потери подписки:
+                        </p>
+                        <div id="cab-skip-status" class="mt-4 p-3.5 rounded-2xl bg-stone-100 text-xs font-semibold text-soil-humus">
+                            Ближайшая доставка: <strong>Четверг, 22 октября (Активна)</strong>
+                        </div>
+                    </div>
+                    <div class="mt-5 flex gap-2">
+                        <button onclick="toggleSkipNextBox()" id="cab-skip-btn" class="flex-1 py-3 rounded-xl border-2 border-soil-humus hover:bg-soil-humus hover:text-white text-soil-humus font-display font-bold text-xs transition">
+                            🏖️ Пропустить неделю
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- =========================================================================
+         VIEW 4: СТРАНИЦА НА КОТОРОЙ ВИДНО ЗАКАЗЫ И ЯДРО ПЛАТФОРМЫ (Requirement #5)
+         Shows all B2C orders, status filtering, and Level 1-4 platform synchronization
+         ========================================================================= -->
+    <div id="app-view-orders" class="hidden min-h-screen bg-[#F5F4F0] py-10 px-4 sm:px-8">
+        <div class="max-w-7xl mx-auto space-y-8">
+
+            <!-- Header & KPI Cards -->
+            <div class="bg-soil-humus text-sun-cream rounded-[32px] p-6 sm:p-9 shadow-xl">
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                    <div>
+                        <span class="px-3 py-1 rounded-full bg-sun-main text-soil-humus font-display font-bold text-[10px] uppercase">
+                            Уровень 2 и Уровень 4 • Единое ядро и Исполнение заказов
+                        </span>
+                        <h1 class="font-display font-extrabold text-2xl sm:text-4xl text-white mt-2">
+                            Страница заказов платформы С.П.Е.Л.О.
+                        </h1>
+                        <p class="text-xs sm:text-sm text-amber-100/80 mt-1">
+                            Здесь отображаются все входящие заказы покупателей (включая созданные вами через 5-шаговую воронку), их комплектация и статус прохождения по 4 уровням платформы.
+                        </p>
+                    </div>
+                    <button onclick="startSubscriptionFlow()" class="px-5 py-3 rounded-xl bg-[#FFA500] text-soil-humus font-display font-bold text-xs shadow-lg">
+                        + Создать тестовый заказ
+                    </button>
+                </div>
+
+                <div class="grid sm:grid-cols-4 gap-4">
+                    <div class="p-4 rounded-2xl bg-white/10 border border-white/10">
+                        <span class="text-xs text-amber-200/70">Активных заказов в сборке</span>
+                        <span id="kpi-total-orders" class="font-display font-black text-2xl text-white block mt-1">4 заказа</span>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-white/10 border border-white/10">
+                        <span class="text-xs text-amber-200/70">Зарезервировано урожая у фермеров</span>
+                        <span id="kpi-total-kg" class="font-display font-black text-2xl text-sun-main block mt-1">31.5 кг</span>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-white/10 border border-white/10">
+                        <span class="text-xs text-amber-200/70">Ожидают звонка-подтверждения</span>
+                        <span id="kpi-awaiting-call" class="font-display font-black text-2xl text-amber-300 block mt-1">1 заказ</span>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-white/10 border border-white/10">
+                        <span class="text-xs text-amber-200/70">Выручка пула доставки</span>
+                        <span id="kpi-total-rev" class="font-display font-black text-2xl text-grass-lime block mt-1">6 460 ₽</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Filter & Live Table -->
+            <div class="bg-white rounded-[32px] p-6 sm:p-8 shadow-md border border-stone-200">
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                    <h2 class="font-serif font-bold text-2xl text-soil-humus">Реестр заказов B2C и этапы исполнения</h2>
+                    <div class="flex flex-wrap gap-2 text-xs">
+                        <button onclick="filterOrdersTable('all')" class="px-3.5 py-1.5 rounded-lg bg-soil-humus text-white font-bold">Все заказы</button>
+                        <button onclick="filterOrdersTable('Ждёт звонка')" class="px-3.5 py-1.5 rounded-lg bg-stone-100 hover:bg-amber-100 text-soil-humus font-semibold">📞 Ждёт звонка</button>
+                        <button onclick="filterOrdersTable('Комплектация')" class="px-3.5 py-1.5 rounded-lg bg-stone-100 hover:bg-amber-100 text-soil-humus font-semibold">📦 Комплектация</button>
+                        <button onclick="filterOrdersTable('Доставлен')" class="px-3.5 py-1.5 rounded-lg bg-stone-100 hover:bg-amber-100 text-soil-humus font-semibold">✓ Доставлен</button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="border-b-2 border-stone-200 text-stone-500 uppercase tracking-wider text-[11px]">
+                                <th class="py-3 px-3">№ Заказа</th>
+                                <th class="py-3 px-3">Покупатель и Телефон</th>
+                                <th class="py-3 px-3">Выбранная коробка</th>
+                                <th class="py-3 px-3">Адрес и Безопасное место</th>
+                                <th class="py-3 px-3">Стоп-лист</th>
+                                <th class="py-3 px-3">Сумма</th>
+                                <th class="py-3 px-3">Этап исполнения (Уровень 4)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-table-body" class="divide-y divide-stone-200">
+                            <!-- Populated dynamically by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- RECIPE PREVIEW MODAL -->
+    <div id="recipe-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-sun-cream rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border-2 border-sun-main relative">
+            <button onclick="closeRecipeModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-stone-200 text-soil-humus font-bold">✕</button>
+            <span id="recipe-modal-time" class="px-3 py-1 rounded-full bg-sun-main text-soil-humus font-bold text-xs">20 минут</span>
+            <h3 id="recipe-modal-title" class="font-serif font-bold text-2xl text-soil-humus mt-3 mb-2">Рецепт С.П.Е.Л.О.</h3>
+            <p id="recipe-modal-ingr" class="text-xs sm:text-sm text-stone-700 leading-relaxed mb-5"></p>
+            <button onclick="closeRecipeModal(); startSubscriptionFlow();" class="w-full py-3.5 rounded-xl bg-[#FFA500] text-soil-humus font-display font-bold text-xs shadow">
+                Заказать коробку с этими ингредиентами →
+            </button>
+        </div>
+    </div>
+
+    <!-- APPLICATION JAVASCRIPT LOGIC -->
+    <script>
+        // =========================================================================
+        // 1. MULTI-SCREEN SPA VIEW SWITCHER (Landing / Checkout / Cabinet / Orders)
+        // =========================================================================
+        function switchAppView(viewKey) {
+            const views = ['landing', 'checkout', 'cabinet', 'orders'];
+            views.forEach(k => {
+                const el = document.getElementById(`app-view-${k}`);
+                const tab = document.getElementById(`view-tab-${k}`);
+                if (k === viewKey) {
+                    el.classList.remove('hidden');
+                    tab.className = 'px-3 py-1 rounded-lg font-bold text-[11px] bg-sun-main text-soil-humus transition flex items-center gap-1.5';
+                } else {
+                    el.classList.add('hidden');
+                    tab.className = 'px-3 py-1 rounded-lg font-semibold text-[11px] bg-white/10 text-white hover:bg-white/20 transition flex items-center gap-1.5';
+                }
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (viewKey === 'orders') renderOrdersTable();
+        }
+
+        // =========================================================================
+        // 2. WEEKLY RESCUED PRODUCE DATA ("Вот что мы спасаем" — Exact Lists from Doc)
+        // =========================================================================
+        const weeklyRescueData = {
+            1: {
+                subtitle: '14 октября - 20 октября (Для коробок со среды 19:00 до четверга 07:00)',
+                mix: [
+                    { size: 'Большой', veg: ['Тыква мускатная (850 г)', 'Томаты Кривянские (700 г)', 'Цветная капуста (1 шт.)', 'Морковь молодая (750 г)', 'Перец сладкий (450 г)', 'Картофель фермерский (1,5 кг)', 'Кабачки грунтовые (700 г)', 'Шпинат свежий (150 г)'], fruit: ['Яблоки Азовские (800 г)', 'Груши Дюшес (600 г)', 'Виноград донской (500 г)', 'Сливы медовые (450 г)'] },
+                    { size: 'Середина', veg: ['Томаты Кривянские (550 г)', 'Морковь молодая (600 г)', 'Перец сладкий (350 г)', 'Картофель фермерский (1,0 кг)', 'Кабачки грунтовые (550 г)', 'Лук репчатый (400 г)', 'Пучок укропа и петрушки (120 г)'], fruit: ['Яблоки Азовские (650 г)', 'Груши Дюшес (500 г)', 'Сливы медовые (400 г)'] },
+                    { size: 'Маленький', veg: ['Томаты Кривянские (450 г)', 'Морковь молодая (450 г)', 'Картофель беби (750 г)', 'Огурцы грунтовые (400 г)', 'Перец сладкий (250 г)'], fruit: ['Яблоки Азовские (500 г)', 'Груши садовые (450 г)'] },
+                    { size: 'Очень маленький', veg: ['Морковь (400 г)', 'Огурцы (350 г)', 'Картофель молодой (550 г)', 'Томаты черри (200 г)'], fruit: ['Яблоки Азовские (450 г)', 'Груши (350 г)'] }
+                ],
+                vegOnly: [
+                    { size: 'Большой', items: ['Тыква мускатная (850 г)', 'Томаты Кривянские (750 г)', 'Баклажаны (600 г)', 'Морковь (750 г)', 'Картофель (1,5 кг)', 'Огурцы (650 г)', 'Кабачки (700 г)', 'Зелёный лук и укроп (2 пучка)'] },
+                    { size: 'Середина', items: ['Томаты Кривянские (550 г)', 'Баклажаны (450 г)', 'Кабачки (550 г)', 'Картофель (1,0 кг)', 'Морковь (500 г)', 'Красный лук (400 г)'] },
+                    { size: 'Маленький', items: ['Томаты (400 г)', 'Кабачки (450 г)', 'Морковь (450 г)', 'Картофель (700 г)', 'Огурцы (350 г)'] }
+                ]
+            },
+            2: {
+                subtitle: '21 октября - 27 октября (Для коробок со среды 19:00 до четверга 07:00)',
+                mix: [
+                    { size: 'Большой', veg: ['Баклажаны (540 г)', 'Авокадо / Перцы (590 г)', 'Брюссельская капуста (540 г)', 'Морковь (720 г)', 'Болгарский перец (200 г)*', 'Салат-латук (1 шт.)*', 'Универсальный картофель (1,4 кг)', 'Сладкий картофель / Батат (630 г)', 'Жёлтые кабачки (810 г)'], fruit: ['Яблоки (720 г)', 'Мандарины ранние (630 г)', 'Дыня колхозница (1 шт.)', 'Хурма южная (4 шт.)'] },
+                    { size: 'Середина', veg: ['Помидоры черри (230 г)', 'Морковь (630 г)', 'Болгарский перец (200 г)*', 'Лук-порей (540 г)', 'Шампиньоны (250 г)*', 'Салатный картофель (900 г)', 'Салатные листья микс (125 г)*', 'Тыква сорта «Баттернат» (2 шт.)'], fruit: ['Виноград (400 г)*', 'Хурма медовая (2 шт.)', 'Апельсины / Яблоки (720 г)', 'Груши (540 г)'] },
+                    { size: 'Маленький', veg: ['Помидоры черри (180 г)', 'Нежная головка брокколи (1 шт.)*', 'Морковь (450 г)', 'Салат-латук (1 шт.)*', 'Пак-чой / Зелень (2 головки)*', 'Универсальный картофель (720 г)', 'Красный лук (360 г)'], fruit: ['Мандарины (450 г)', 'Киви южные (360 г)', 'Груши (540 г)'] },
+                    { size: 'Очень маленький', veg: ['Морковь (450 г)', 'Огурцы (300 г)*', 'Лук-порей (360 г)', 'Шампиньоны (250 г)*', 'Универсальный картофель (540 г)'], fruit: ['Яблоки / Апельсины (450 г)', 'Золотистые киви (330 г)'] }
+                ],
+                vegOnly: [
+                    { size: 'Большой', items: ['Баклажаны (540 г)', 'Мини-помидоры (360 г)', 'Нежная головка брокколи (2 шт.)*', 'Брюссельская капуста (540 г)', 'Кабачки (720 г)', 'Огурцы (700 г)', 'Универсальный картофель (1,4 кг)', 'Зелёный лук (2 пучка)', 'Сладкий картофель (630 г)'] },
+                    { size: 'Середина', items: ['Помидоры черри (230 г)', 'Нежная головка брокколи (1 шт.)*', 'Цикорий / Салат (410 г)', 'Кабачки (540 г)', 'Салатный картофель (900 г)', 'Пак-чой (2 головки)*', 'Красный лук (450 г)', 'Сладкий картофель (630 г)'] },
+                    { size: 'Маленький', items: ['Баклажаны (270 г)', 'Помидоры черри (180 г)', 'Нежная головка брокколи (1 шт.)*', 'Коричневый лук (360 г)', 'Морковь (450 г)', 'Универсальный картофель (720 г)', 'Красная капуста (1 шт.)'] }
+                ]
+            }
+        };
+
+        function switchRescueWeek(weekNum) {
+            const data = weeklyRescueData[weekNum];
+            document.getElementById('active-week-subtitle').textContent = data.subtitle;
+
+            // Highlight selected week card
+            const c1 = document.getElementById('week-card-1');
+            const c2 = document.getElementById('week-card-2');
+            const b1 = document.getElementById('week-btn-1');
+            const b2 = document.getElementById('week-btn-2');
+
+            if (weekNum === 1) {
+                c1.className = 'p-6 rounded-2xl border-2 border-sun-main bg-sun-cream text-center shadow-md transition';
+                c2.className = 'p-6 rounded-2xl border-2 border-stone-200 text-center transition';
+                b1.className = 'mt-4 px-5 py-2.5 rounded-xl bg-[#FFA500] text-soil-humus font-display font-bold text-xs shadow transition';
+                b1.textContent = 'Посмотрите, что внутри (Активно)';
+                b2.className = 'mt-4 px-5 py-2.5 rounded-xl bg-stone-200 hover:bg-sun-main text-soil-humus font-display font-bold text-xs transition';
+                b2.textContent = 'Посмотрите, что внутри';
+            } else {
+                c2.className = 'p-6 rounded-2xl border-2 border-sun-main bg-sun-cream text-center shadow-md transition';
+                c1.className = 'p-6 rounded-2xl border-2 border-stone-200 text-center transition';
+                b2.className = 'mt-4 px-5 py-2.5 rounded-xl bg-[#FFA500] text-soil-humus font-display font-bold text-xs shadow transition';
+                b2.textContent = 'Посмотрите, что внутри (Активно)';
+                b1.className = 'mt-4 px-5 py-2.5 rounded-xl bg-stone-200 hover:bg-sun-main text-soil-humus font-display font-bold text-xs transition';
+                b1.textContent = 'Посмотрите, что внутри';
+            }
+
+            // Render Mix Table
+            const mixContainer = document.getElementById('rescue-table-mix');
+            mixContainer.innerHTML = data.mix.map(col => `
+                <div class="p-5 rounded-2xl bg-stone-50 border border-stone-200">
+                    <h5 class="font-serif font-bold text-xl text-soil-humus mb-3">${col.size}</h5>
+                    <p class="font-bold text-xs uppercase text-grass-deep mb-1.5">Овощи</p>
+                    <ul class="space-y-1 text-xs text-stone-700 mb-4">
+                        ${col.veg.map(v => `<li>${v}</li>`).join('')}
+                    </ul>
+                    <p class="font-bold text-xs uppercase text-sun-deep mb-1.5">Фрукты</p>
+                    <ul class="space-y-1 text-xs text-stone-700">
+                        ${col.fruit.map(f => `<li>${f}</li>`).join('')}
+                    </ul>
+                </div>
+            `).join('');
+
+            // Render Veg Only Table
+            const vegContainer = document.getElementById('rescue-table-veg');
+            vegContainer.innerHTML = data.vegOnly.map(col => `
+                <div class="p-5 rounded-2xl bg-stone-50 border border-stone-200">
+                    <h5 class="font-serif font-bold text-xl text-soil-humus mb-3">${col.size}</h5>
+                    <p class="font-bold text-xs uppercase text-grass-deep mb-1.5">Овощи</p>
+                    <ul class="space-y-1 text-xs text-stone-700">
+                        ${col.items.map(v => `<li>${v}</li>`).join('')}
+                    </ul>
+                </div>
+            `).join('');
+        }
+
+        // =========================================================================
+        // 3. FAMILY HARVEST & BUDGET SAVINGS CALCULATOR
+        // =========================================================================
+        const familyCalcState = { tier: 2, weeklyKg: 9.0, weeklyRub: 980, sizeCode: 'M' };
+
+        function setFamilyCalc(tier, kg, rub, sizeCode) {
+            familyCalcState.tier = tier;
+            familyCalcState.weeklyKg = kg;
+            familyCalcState.weeklyRub = rub;
+            familyCalcState.sizeCode = sizeCode;
+
+            [1, 2, 3].forEach(t => {
+                const btn = document.getElementById(`calc-fam-${t}`);
+                btn.className = t === tier
+                    ? 'p-3 rounded-xl border-2 border-grass-main bg-grass-main/10 text-xs font-bold text-soil-humus'
+                    : 'p-3 rounded-xl border-2 border-stone-200 text-xs font-bold text-soil-humus';
+            });
+            updateFamilyCalc();
+        }
+
+        function updateFamilyCalc() {
+            const months = parseInt(document.getElementById('calc-months-slider').value, 10);
+            const mLabel = months === 1 ? 'месяц' : (months < 5 ? 'месяца' : 'месяцев');
+            document.getElementById('calc-months-out').textContent = `${months} ${mLabel}`;
+
+            const weeks = months * 4;
+            const kg = Math.round(familyCalcState.weeklyKg * weeks);
+            const rub = Math.round(familyCalcState.weeklyRub * weeks);
+            const water = kg * 200;
+            const co2 = Math.round(kg * 1.9);
+            const baskets = Math.max(1, Math.round(kg / 8));
+
+            document.getElementById('calc-kg-out').textContent = `${kg} кг`;
+            document.getElementById('calc-baskets-out').textContent = `≈ ${baskets} полных корзин свежей еды`;
+            document.getElementById('calc-rub-out').textContent = `${rub.toLocaleString('ru-RU')} ₽`;
+            document.getElementById('calc-water-out').textContent = `${water.toLocaleString('ru-RU')} л`;
+            document.getElementById('calc-co2-out').textContent = `${co2} кг`;
+        }
+
+        // =========================================================================
+        // 4. 5-STEP ODDBOX CHECKOUT FUNNEL LOGIC
+        // =========================================================================
+        const funnelState = {
+            step: 1,
+            typeKey: 'mix',
+            typeName: 'Коробка с фруктами и овощами',
+            sizeKey: 'M',
+            price: 1490,
+            weightKg: 6.4,
+            excludes: new Set()
+        };
+
+        const sizeSpecs = {
+            XS: { label: 'Размер XS (Очень маленький)', price: 890, people: 'Идеально подходит для 1 человека.', varieties: '5 видов овощей и 2 вида фруктов на неделю.', weight: 3.5 },
+            S:  { label: 'Размер С (Маленький)', price: 1190, people: 'Идеально подходит для 1–2 человек.', varieties: '7 видов овощей и 3 вида фруктов на неделю.', weight: 4.8 },
+            M:  { label: 'Размер М (Средний)', price: 1490, people: 'Идеально подходит для 2–3 человек.', varieties: '8 видов овощей и 4 вида фруктов рискуют быть выброшенными.', weight: 6.4 },
+            L:  { label: 'Размер Л (Большой)', price: 2090, people: 'Идеально подходит для семьи 4+ человек.', varieties: '10 видов овощей и 4 вида фруктов в щедром объёме.', weight: 9.5 }
+        };
+
+        function fillHeroAddress(addr) {
+            document.getElementById('hero-address-input').value = addr;
+            document.getElementById('funnel-address-input').value = addr;
+            document.getElementById('step4-address-confirm').value = addr;
+        }
+
+        function startSubscriptionFlowFromHero() {
+            const heroAddr = document.getElementById('hero-address-input').value.trim();
+            if (heroAddr) {
+                document.getElementById('funnel-address-input').value = heroAddr;
+                document.getElementById('step4-address-confirm').value = heroAddr;
+            }
+            startSubscriptionFlow('mix', 'M');
+            goToCheckoutStep(2); // Since address was entered in Hero, jump straight to Step 2 Box Selection!
+        }
+
+        function startSubscriptionFlow(preType, preSize) {
+            if (preType) setFunnelType(preType, preType === 'mix' ? 'Фрукты и овощи' : (preType === 'veg' ? 'Овощи' : 'Фрукты'));
+            if (preSize) setFunnelSize(preSize);
+            switchAppView('checkout');
+            goToCheckoutStep(1);
+        }
+
+        function goToCheckoutStep(stepNum) {
+            funnelState.step = stepNum;
+            for (let i = 1; i <= 5; i++) {
+                const panel = document.getElementById(`checkout-step-${i}`);
+                const pill = document.getElementById(`step-pill-${i}`);
+                const badge = document.getElementById(`step-badge-${i}`);
+
+                if (i === stepNum) {
+                    panel.classList.remove('hidden');
+                    pill.className = 'flex items-center gap-1.5 text-soil-humus font-bold';
+                    badge.className = 'w-6 h-6 rounded-full bg-soil-humus text-white flex items-center justify-center text-[11px]';
+                    badge.textContent = i;
+                } else if (i < stepNum) {
+                    panel.classList.add('hidden');
+                    pill.className = 'flex items-center gap-1.5 text-soil-humus font-semibold';
+                    badge.className = 'w-6 h-6 rounded-full bg-[#FFA500] text-soil-humus font-bold flex items-center justify-center text-[11px]';
+                    badge.textContent = '✓';
+                } else {
+                    panel.classList.add('hidden');
+                    pill.className = 'flex items-center gap-1.5 text-stone-400';
+                    badge.className = 'w-6 h-6 rounded-full border border-stone-300 flex items-center justify-center text-[11px]';
+                    badge.textContent = i;
+                }
+            }
+            syncFunnelSummaries();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function setFunnelType(key, label) {
+            funnelState.typeKey = key;
+            funnelState.typeName = key === 'mix' ? 'Коробка с фруктами и овощами' : (key === 'veg' ? 'Овощной набор С.П.Е.Л.О.' : 'Фруктовый бокс С.П.Е.Л.О.');
+
+            ['mix', 'veg', 'fruit'].forEach(k => {
+                const btn = document.getElementById(`f-type-${k}`);
+                btn.className = k === key
+                    ? 'px-4 py-2.5 rounded-full border-2 border-soil-humus bg-soil-humus text-white text-xs font-bold transition'
+                    : 'px-4 py-2.5 rounded-full border border-stone-300 text-soil-humus hover:border-soil-humus text-xs font-semibold transition';
+            });
+            syncFunnelSummaries();
+        }
+
+        function setFunnelSize(sizeKey) {
+            funnelState.sizeKey = sizeKey;
+            const spec = sizeSpecs[sizeKey];
+            funnelState.price = spec.price;
+            funnelState.weightKg = spec.weight;
+
+            ['L', 'M', 'S', 'XS'].forEach(k => {
+                const btn = document.getElementById(`f-size-${k}`);
+                btn.className = k === sizeKey
+                    ? 'w-12 h-12 rounded-full border-2 border-soil-humus bg-amber-100 font-extrabold text-xs text-soil-humus transition'
+                    : 'w-12 h-12 rounded-full border border-stone-300 font-bold text-xs text-soil-humus hover:border-soil-humus transition';
+            });
+
+            document.getElementById('f-info-people').textContent = spec.people;
+            document.getElementById('f-info-varieties').textContent = spec.varieties;
+            document.getElementById('f-info-weight').textContent = `Спасите около ${spec.weight} кг свежих фермерских продуктов напрямую от производителей.`;
+            document.getElementById('f-step2-price').textContent = `${spec.price.toLocaleString('ru-RU')} ₽`;
+            syncFunnelSummaries();
+        }
+
+        function toggleFunnelExclude(btn, label) {
+            if (funnelState.excludes.has(label)) {
+                funnelState.excludes.delete(label);
+                btn.className = 'px-2.5 py-1 rounded-lg border border-stone-300 text-stone-700';
+            } else {
+                funnelState.excludes.add(label);
+                btn.className = 'px-2.5 py-1 rounded-lg border border-soil-humus bg-amber-200 text-soil-humus font-bold';
+            }
+        }
+
+        function applyFunnelPromo() {
+            funnelState.price = Math.round(sizeSpecs[funnelState.sizeKey].price * 0.7);
+            syncFunnelSummaries();
+        }
+
+        function syncFunnelSummaries() {
+            const addr = document.getElementById('funnel-address-input').value || 'Ростов-на-Дону, ул. Большая Садовая, 58';
+            document.getElementById('step4-address-confirm').value = addr;
+
+            document.querySelectorAll('.summary-box-title').forEach(el => {
+                el.textContent = `${funnelState.typeName} (${funnelState.sizeKey})`;
+            });
+            document.querySelectorAll('.summary-box-size').forEach(el => {
+                el.textContent = sizeSpecs[funnelState.sizeKey].label;
+            });
+            document.querySelectorAll('.summary-address-text').forEach(el => {
+                el.textContent = addr;
+            });
+            document.querySelectorAll('.summary-price-val').forEach(el => {
+                el.textContent = `${funnelState.price.toLocaleString('ru-RU')} ₽`;
+            });
+
+            const fName = document.getElementById('funnel-first-name')?.value || 'Алексей';
+            const lName = document.getElementById('funnel-last-name')?.value || 'Донской';
+            const phone = document.getElementById('funnel-phone')?.value || '+7 (928) 210-45-90';
+            const safe = document.getElementById('funnel-safe-place')?.value || 'У двери на коврике';
+
+            document.getElementById('step5-client-info').textContent = `${fName} ${lName} (${phone})`;
+            document.getElementById('step5-safe-info').textContent = `${addr} • ${safe}`;
+        }
+
+        // =========================================================================
+        // 5. ORDERS DATABASE & LEVEL 4 EXECUTION SYNC
+        // =========================================================================
+        const platformOrders = [
+            { id: '#SP-2046', client: 'Елена Ковалёва', phone: '+7 (928) 114-22-10', box: 'Коробка с фруктами и овощами (M)', weight: 6.4, address: 'Ростов-на-Дону, пр. Чехова, 74', safe: 'У консьержа', excludes: 'Без кинзы', price: 1490, stage: 'Доставлен' },
+            { id: '#SP-2047', client: 'Артём Смирнов', phone: '+7 (918) 550-89-31', box: 'Большой сбор фруктов и овощей (L)', weight: 9.5, address: 'Аксай, ул. Садовая, 19', safe: 'На крыльце у калитки', excludes: 'Без сельдерея', price: 2090, stage: 'Комплектация' },
+            { id: '#SP-2048', client: 'Мария Донская', phone: '+7 (928) 772-15-04', box: 'Овощной набор С.П.Е.Л.О. (M)', weight: 6.4, address: 'Ростов-на-Дону, пр. Стачки, 188', safe: 'У двери на коврике', excludes: 'Ем всё', price: 1390, stage: 'Проверка качества' },
+            { id: '#SP-2049', client: 'Алексей Донской', phone: '+7 (928) 210-45-90', box: 'Коробка с фруктами и овощами (M)', weight: 6.4, address: 'Ростов-на-Дону, ул. Большая Садовая, 58', safe: 'У двери на коврике', excludes: 'Без лука', price: 1490, stage: 'Ждёт звонка' }
+        ];
+
+        function confirmOrderViaPhoneCall() {
+            const fName = document.getElementById('funnel-first-name').value || 'Алексей';
+            const lName = document.getElementById('funnel-last-name').value || 'Донской';
+            const phone = document.getElementById('funnel-phone').value || '+7 (928) 210-45-90';
+            const addr = document.getElementById('step4-address-confirm').value;
+            const safe = document.getElementById('funnel-safe-place').value || 'У двери на коврике';
+            const exList = Array.from(funnelState.excludes);
+
+            const newId = `#SP-${2050 + platformOrders.length}`;
+            document.getElementById('step5-order-id').textContent = newId;
+
+            // Update Cabinet Profile & Add to Platform Orders
+            document.getElementById('cab-user-name').textContent = `${fName} ${lName}`;
+            document.getElementById('cab-user-address').textContent = `${addr} • Безопасное место: ${safe}`;
+            document.getElementById('cab-order-id').textContent = newId;
+            document.getElementById('cab-current-box-name').textContent = `${funnelState.typeName} (${funnelState.sizeKey})`;
+
+            // Also mark #SP-2049 as confirmed and push new order if changed
+            platformOrders[platformOrders.length - 1].stage = 'Комплектация';
+            platformOrders.unshift({
+                id: newId,
+                client: `${fName} ${lName}`,
+                phone: phone,
+                box: `${funnelState.typeName} (${funnelState.sizeKey})`,
+                weight: funnelState.weightKg,
+                address: addr,
+                safe: safe,
+                excludes: exList.length ? exList.join(', ') : 'Ем всё',
+                price: funnelState.price,
+                stage: 'Комплектация'
+            });
+
+            document.getElementById('orders-badge-count').textContent = platformOrders.length;
+            document.getElementById('step5-confirmed-banner').classList.remove('hidden');
+            renderOrdersTable();
+        }
+
+        let currentOrdersFilter = 'all';
+        function filterOrdersTable(filterKey) {
+            currentOrdersFilter = filterKey;
+            renderOrdersTable();
+        }
+
+        function updateOrderStage(index, newStage) {
+            platformOrders[index].stage = newStage;
+            renderOrdersTable();
+        }
+
+        function renderOrdersTable() {
+            const tbody = document.getElementById('orders-table-body');
+            const filtered = currentOrdersFilter === 'all'
+                ? platformOrders
+                : platformOrders.filter(o => o.stage === currentOrdersFilter);
+
+            tbody.innerHTML = filtered.map((order, idx) => {
+                const badgeClass = order.stage === 'Доставлен'
+                    ? 'bg-emerald-100 text-grass-deep'
+                    : (order.stage === 'Ждёт звонка' ? 'bg-amber-100 text-sun-deep' : 'bg-sky-100 text-sky-900');
+
+                return `
+                    <tr class="hover:bg-stone-50">
+                        <td class="py-3.5 px-3 font-mono font-bold text-soil-humus">${order.id}</td>
+                        <td class="py-3.5 px-3">
+                            <strong class="block text-soil-humus">${order.client}</strong>
+                            <span class="text-stone-500">${order.phone}</span>
+                        </td>
+                        <td class="py-3.5 px-3 font-semibold text-soil-humus">${order.box} <span class="text-stone-400">(${order.weight} кг)</span></td>
+                        <td class="py-3.5 px-3">
+                            <span class="block text-soil-humus">${order.address}</span>
+                            <span class="text-[11px] text-stone-500">Безопасное место: ${order.safe}</span>
+                        </td>
+                        <td class="py-3.5 px-3 text-stone-600">${order.excludes}</td>
+                        <td class="py-3.5 px-3 font-display font-bold text-soil-humus">${order.price.toLocaleString('ru-RU')} ₽</td>
+                        <td class="py-3.5 px-3">
+                            <select onchange="updateOrderStage(${idx}, this.value)" class="px-2.5 py-1.5 rounded-lg font-bold text-xs ${badgeClass} border border-black/10">
+                                <option value="Ждёт звонка" ${order.stage === 'Ждёт звонка' ? 'selected' : ''}>📞 Ждёт звонка</option>
+                                <option value="Закупка" ${order.stage === 'Закупка' ? 'selected' : ''}>🌱 1. Закупка у фермера</option>
+                                <option value="Проверка качества" ${order.stage === 'Проверка качества' ? 'selected' : ''}>🔍 2. Проверка качества</option>
+                                <option value="Комплектация" ${order.stage === 'Комплектация' ? 'selected' : ''}>📦 3. Комплектация</option>
+                                <option value="В доставке" ${order.stage === 'В доставке' ? 'selected' : ''}>🚚 4. В доставке</option>
+                                <option value="Доставлен" ${order.stage === 'Доставлен' ? 'selected' : ''}>✓ 5. Доставлен</option>
+                            </select>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Update KPIs
+            const totalKg = platformOrders.reduce((acc, o) => acc + o.weight, 0).toFixed(1);
+            const totalRev = platformOrders.reduce((acc, o) => acc + o.price, 0);
+            const awaiting = platformOrders.filter(o => o.stage === 'Ждёт звонка').length;
+
+            document.getElementById('kpi-total-orders').textContent = `${platformOrders.length} заказов`;
+            document.getElementById('kpi-total-kg').textContent = `${totalKg} кг`;
+            document.getElementById('kpi-awaiting-call').textContent = `${awaiting} заказ`;
+            document.getElementById('kpi-total-rev').textContent = `${totalRev.toLocaleString('ru-RU')} ₽`;
+        }
+
+        // =========================================================================
+        // 6. USER CABINET INTERACTIVE CONTROLS
+        // =========================================================================
+        function setCabinetDeliveryStage(stageNum) {
+            const s = parseInt(stageNum, 10);
+            for (let i = 1; i <= 5; i++) {
+                const card = document.getElementById(`cab-step-${i}`);
+                if (i < s) {
+                    card.className = 'p-4 rounded-2xl border-2 border-grass-main bg-grass-main/10';
+                } else if (i === s) {
+                    card.className = 'p-4 rounded-2xl border-2 border-sun-main bg-sun-cream shadow';
+                } else {
+                    card.className = 'p-4 rounded-2xl border border-stone-200 bg-stone-50 opacity-75';
+                }
+            }
+            const photoProof = document.getElementById('cab-photo-proof');
+            if (s === 5) {
+                photoProof.classList.remove('hidden');
+            } else {
+                photoProof.classList.add('hidden');
+            }
+        }
+
+        function changeCabinetBox(val) {
+            document.getElementById('cab-current-box-name').textContent = val.split(' — ')[0];
+        }
+
+        function toggleSwapCabinetItem(btn) {
+            if (btn.dataset.swapped === '1') {
+                btn.dataset.swapped = '0';
+                btn.className = 'px-2.5 py-1.5 rounded-lg bg-stone-100 hover:bg-amber-100 font-medium';
+                btn.textContent = btn.dataset.original;
+            } else {
+                btn.dataset.original = btn.textContent;
+                btn.dataset.swapped = '1';
+                btn.className = 'px-2.5 py-1.5 rounded-lg bg-sun-main text-soil-humus font-bold';
+                btn.textContent = '🔄 Заменено на Яблоки Азовские (+400 г)';
+            }
+            document.getElementById('cab-swap-notice').textContent = '✓ Ваш обмен сохранён в Едином ядре платформы для ближайшей комплектации!';
+        }
+
+        let nextBoxSkipped = false;
+        function toggleSkipNextBox() {
+            nextBoxSkipped = !nextBoxSkipped;
+            const status = document.getElementById('cab-skip-status');
+            const btn = document.getElementById('cab-skip-btn');
+            if (nextBoxSkipped) {
+                status.className = 'mt-4 p-3.5 rounded-2xl bg-amber-100 text-xs font-bold text-sun-deep';
+                status.innerHTML = '🏖️ Поставка 22 октября <strong>пропущена</strong>. Следующая коробка: 29 октября.';
+                btn.textContent = '↺ Вернуть доставку 22 октября';
+            } else {
+                status.className = 'mt-4 p-3.5 rounded-2xl bg-stone-100 text-xs font-semibold text-soil-humus';
+                status.innerHTML = 'Ближайшая доставка: <strong>Четверг, 22 октября (Активна)</strong>';
+                btn.textContent = '🏖️ Пропустить неделю';
+            }
+        }
+
+        // =========================================================================
+        // 7. B2B FARMER FORM, RECIPE MODAL & HTML FILE DOWNLOADER
+        // =========================================================================
+        function submitFarmerOffer() {
+            document.getElementById('b2b-farm-feedback').classList.remove('hidden');
+        }
+
+        function openRecipeModal(title, time, ingr) {
+            document.getElementById('recipe-modal-title').textContent = title;
+            document.getElementById('recipe-modal-time').textContent = time;
+            document.getElementById('recipe-modal-ingr').textContent = `Ингредиенты из коробки С.П.Е.Л.О.: ${ingr}`;
+            const modal = document.getElementById('recipe-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeRecipeModal() {
+            const modal = document.getElementById('recipe-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function downloadThisHtmlFile() {
+            const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'spelo-mvp.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        window.onload = function() {
+            switchRescueWeek(2);
+            updateFamilyCalc();
+            syncFunnelSummaries();
+            renderOrdersTable();
+        };
+    </script>
+</body>
+</html>
