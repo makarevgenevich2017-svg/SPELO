@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru" class="scroll-smooth">
 <head>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>СПЕЛО — Сервис свежих фермерских продуктов и сезонного урожая</title>
@@ -1890,24 +1891,57 @@
         ];
 
         function confirmOrderViaPhoneCall() {
-            const fName = document.getElementById('funnel-first-name').value || 'Алексей';
-            const lName = document.getElementById('funnel-last-name').value || 'Донской';
-            const phone = document.getElementById('funnel-phone').value || '+7 (928) 210-45-90';
-            const addr = document.getElementById('step4-address-confirm').value;
+    const fName = document.getElementById('funnel-first-name').value || 'Клиент';
+    const lName = document.getElementById('funnel-last-name').value || '';
+    const phone = document.getElementById('funnel-phone').value || 'Не указан';
+    const email = document.getElementById('funnel-email')?.value || 'Не указан';
+    const addr = document.getElementById('step4-address-confirm').value || 'Не указан';
+    const safePlace = document.getElementById('funnel-safe-place')?.value || '—';
+    const deliveryDate = document.getElementById('funnel-delivery-date')?.value || 'Ближайшие выходные';
 
-            const newId = `#SP-${2050 + Math.floor(Math.random() * 50)}`;
-            document.getElementById('step5-order-id').textContent = newId;
+    const newId = `#SP-${2050 + Math.floor(Math.random() * 50)}`;
+    document.getElementById('step5-order-id').textContent = newId;
 
-            document.getElementById('cab-user-name').textContent = `${fName} ${lName}`;
-            document.getElementById('cab-user-address').textContent = addr;
-            document.getElementById('cab-order-id').textContent = newId;
+    document.getElementById('cab-user-name').textContent = `${fName} ${lName}`.trim();
+    document.getElementById('cab-user-address').textContent = addr;
+    document.getElementById('cab-order-id').textContent = newId;
 
-            const catName = pricingMatrix[funnelState.typeKey].name;
-            document.getElementById('cab-current-box-name').textContent = `${catName} (${funnelState.sizeKey})`;
-            document.getElementById('cab-current-box-price').textContent = `Цена: ${funnelState.price} ₽`;
+    const catName = pricingMatrix[funnelState.typeKey].name;
+    document.getElementById('cab-current-box-name').textContent = `${catName} (${funnelState.sizeKey})`;
+    document.getElementById('cab-current-box-price').textContent = `Цена: ${funnelState.price} ₽`;
 
-            document.getElementById('step5-confirmed-banner').classList.remove('hidden');
+    document.getElementById('step5-confirmed-banner').classList.remove('hidden');
+
+    // === ИНТЕГРАЦИЯ С ТЕЛЕГРАМ БОТОМ ===
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+        tg.ready();
+        
+        // Превращаем Set стоп-листа в читаемый массив
+        const stopListArr = Array.from(funnelState.excludes);
+
+        const orderData = {
+            order_id: newId,
+            box_type: catName,
+            box_size: funnelState.sizeKey,
+            price: funnelState.price,
+            stop_list: stopListArr.length > 0 ? stopListArr.join(', ') : 'Нет ограничений',
+            client_name: `${fName} ${lName}`.trim(),
+            phone: phone,
+            email: email,
+            address: addr,
+            delivery_date: deliveryDate,
+            safe_place: safePlace
+        };
+
+        // Отправляем JSON-строку обратно боту
+        try {
+            tg.sendData(JSON.stringify(orderData));
+        } catch (e) {
+            console.error("Ошибка передачи данных в Telegram:", e);
         }
+    }
+}
 
         // =========================================================================
         // CABINET LOGIC
